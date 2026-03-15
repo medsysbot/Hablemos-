@@ -519,7 +519,7 @@ button {
       <div class="trackingRow"><div><strong>Ojos:</strong> <span id="blinkState">Sin calibrar</span></div></div>
     </section>
 
-    <div id="confirmZone" class="confirmZone">Tras elegir una palabra, un segundo parpadeo largo la confirma</div>
+    <div id="confirmZone" class="confirmZone">Tras elegir una palabra, un segundo parpadeo largo la confirma. Doble parpadeo corto la borra.</div>
 
     <section id="messagePanel" class="message" aria-live="polite" aria-atomic="true">
       <h1 id="messageText" class="message__text">Iniciando cámara y calibración</h1>
@@ -541,7 +541,7 @@ button {
       </div>
     </section>
 
-    <div class="footer">Barrido integrado con flechas arriba y abajo, parpadeo largo estable y selección en dos pasos</div>
+    <div class="footer">Barrido integrado con flechas arriba y abajo, parpadeo largo estable y doble parpadeo corto para borrar</div>
   </div>
 </main>
 
@@ -580,6 +580,9 @@ button {
         SPLASH_DURATION_MS: 4000,
         SCAN_INTERVAL_MS: 2400,
         LONG_BLINK_MS: 700,
+        SHORT_BLINK_MIN_MS: 120,
+        SHORT_BLINK_MAX_MS: 420,
+        DOUBLE_BLINK_GAP_MS: 700,
         BLINK_THRESHOLD_FACTOR: 0.63,
         MIN_CLOSED_EYE_RATIO: 0.10,
         CALIBRATION_SAMPLES_REQUIRED: 24,
@@ -608,6 +611,8 @@ button {
         closedFrameCount: 0,
         openFrameCount: 0,
         blinkCooldownUntil: 0,
+        lastShortBlinkAt: 0,
+        shortBlinkCount: 0,
         calibrationSamples: [],
         baselineEyeOpenRatio: null,
         smoothedEyeOpenRatio: null,
@@ -654,6 +659,20 @@ button {
         messageText.textContent = text;
         messagePanel.classList.remove('message--candidate');
         messagePanel.classList.add('message--confirm');
+      }
+
+      function clearPendingSelection() {
+        state.pendingWord = '';
+        state.waitingConfirm = false;
+        state.lastShortBlinkAt = 0;
+        state.shortBlinkCount = 0;
+        confirmZone.classList.remove('confirmZone--ready');
+        setConfirm('No armada');
+        setScan('Activo, recorriendo opciones lentamente');
+        setStatus('Selección cancelada. El barrido continúa.');
+        messageText.textContent = 'Espera el barrido';
+        resetMessageVisual();
+        paintScanTarget();
       }
 
       function chooseSpanishVoice() {
@@ -745,11 +764,13 @@ button {
           var index = Number(current.split(':')[1]);
           state.pendingWord = actionButtons[index].getAttribute('data-message') || '';
           state.waitingConfirm = true;
+          state.lastShortBlinkAt = 0;
+          state.shortBlinkCount = 0;
           confirmZone.classList.add('confirmZone--ready');
           setCandidateWord(state.pendingWord);
           setConfirm('Lista para confirmar');
           setScan('Detenido esperando confirmación');
-          setStatus('Palabra escrita. Haz otro parpadeo largo para confirmar.');
+          setStatus('Palabra escrita. Parpadeo largo confirma. Doble parpadeo corto la borra.');
           paintScanTarget();
           return;
         }
@@ -759,6 +780,8 @@ button {
           speakMessage(state.pendingWord);
           state.pendingWord = '';
           state.waitingConfirm = false;
+          state.lastShortBlinkAt = 0;
+          state.shortBlinkCount = 0;
           confirmZone.classList.remove('confirmZone--ready');
           setConfirm('No armada');
           setScan('Activo, recorriendo opciones lentamente');
@@ -812,6 +835,11 @@ button {
           state.smoothedEyeOpenRatio = state.smoothedEyeOpenRatio * 0.72 + sample * 0.28;
         }
 
+        if (state.shortBlinkCount > 0 && now - state.lastShortBlinkAt > state.DOUBLE_BLINK_GAP_MS) {
+          state.shortBlinkCount = 0;
+          state.lastShortBlinkAt = 0;
+        }
+
         var closedThreshold = Math.max(state.MIN_CLOSED_EYE_RATIO, state.baselineEyeOpenRatio * state.BLINK_THRESHOLD_FACTOR);
         var closedNow = state.smoothedEyeOpenRatio <= closedThreshold;
 
@@ -830,6 +858,8 @@ button {
             if (now >= state.blinkCooldownUntil && closedDuration >= state.LONG_BLINK_MS) {
               activateCurrentTarget();
               state.blinkCooldownUntil = now + 1200;
+              state.shortBlinkCount = 0;
+              state.lastShortBlinkAt = 0;
             }
           }
           return;
@@ -841,13 +871,32 @@ button {
         if (state.openFrameCount >= 2 && state.blinkStartTime) {
           var blinkDuration = now - state.blinkStartTime;
           state.blinkStartTime = 0;
-          if (blinkDuration >= 120 && blinkDuration < state.LONG_BLINK_MS) {
+
+          if (blinkDuration >= state.SHORT_BLINK_MIN_MS && blinkDuration <= state.SHORT_BLINK_MAX_MS) {
+            if (state.waitingConfirm) {
+              if (state.shortBlinkCount === 0 || now - state.lastShortBlinkAt > state.DOUBLE_BLINK_GAP_MS) {
+                state.shortBlinkCount = 1;
+                state.lastShortBlinkAt = now;
+                setBlink('Parpadeo 1/2 para borrar');
+                return;
+              }
+
+              state.shortBlinkCount += 1;
+              state.lastShortBlinkAt = now;
+              if (state.shortBlinkCount >= 2) {
+                clearPendingSelection();
+                setBlink('Palabra borrada');
+                state.blinkCooldownUntil = now + 700;
+                return;
+              }
+            }
+
             setBlink('Parpadeo corto');
             return;
           }
         }
 
-        setBlink(state.waitingConfirm ? 'Esperando confirmación' : 'Ojos abiertos');
+        setBlink(state.waitingConfirm ? (state.shortBlinkCount === 1 ? 'Esperando 2/2 para borrar' : 'Esperando confirmación') : 'Ojos abiertos');
       }
 
       function handleNoFace(now) {
@@ -962,7 +1011,7 @@ button {
             state.smoothedEyeOpenRatio = state.baselineEyeOpenRatio;
             setTracking('Parpadeo calibrado');
             setCalibration('Completa');
-            setStatus('Calibración completa. El barrido ya está activo.');
+            setStatus('Calibración completa. El barrido ya está activo. Parpadeo largo activa o confirma; doble parpadeo corto borra la palabra pendiente.');
             setBlink('Ojos abiertos');
             messageText.textContent = 'Espera el barrido';
             cameraModal.classList.add('hidden');
