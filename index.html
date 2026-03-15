@@ -1,0 +1,1047 @@
+<!DOCTYPE html><html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hablemos Experimental</title>
+  <style>
+    :root {
+      --bg: #06111f;
+      --bg-soft: #0c2a4a;
+      --panel: #0f1d2b;
+      --panel-2: #14283a;
+      --text: #ffffff;
+      --text-soft: #d8e3ee;
+      --accent-1: #29e6c9;
+      --accent-2: #9df545;
+      --accent-3: #ffd83a;
+      --ok: #225438;
+      --warn: #6a5200;
+      --danger: #7a2525;
+      --info: #0f5a72;
+      --shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
+    }* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.app {
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at center, var(--bg-soft) 0%, #020814 72%);
+}
+
+.screen {
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Splash */
+.splash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.splash__container {
+  text-align: center;
+  position: relative;
+  width: min(100%, 520px);
+}
+
+.logoGlow {
+  position: absolute;
+  width: min(84vw, 420px);
+  height: min(84vw, 420px);
+  background: radial-gradient(circle, rgba(80, 255, 180, 0.25) 0%, rgba(80, 255, 180, 0.12) 40%, transparent 70%);
+  filter: blur(20px);
+  top: max(-40px, -3vw);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.splash svg {
+  width: min(84vw, 420px);
+  max-width: 420px;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 0 20px rgba(80, 255, 180, 0.35));
+}
+
+.stroke {
+  fill: none;
+  stroke: url(#grad);
+  stroke-width: 12;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bubble {
+  stroke-dasharray: 900;
+  stroke-dashoffset: 900;
+  animation: draw 1s ease forwards;
+}
+
+.wave {
+  opacity: 0;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: show 0.01s linear 1s forwards, draw 0.8s ease 1s forwards;
+}
+
+.spiral {
+  opacity: 0;
+  stroke-dasharray: 450;
+  stroke-dashoffset: 450;
+  animation: show 0.01s linear 1.8s forwards, draw 0.8s ease 1.8s forwards;
+}
+
+.title {
+  margin-top: 22px;
+  font-size: clamp(2.2rem, 6vw, 3.5rem);
+  font-weight: 300;
+  letter-spacing: -1px;
+  color: white;
+  opacity: 0;
+  transform: translateY(15px);
+  animation: titleIn 0.6s ease forwards;
+  animation-delay: 2.6s;
+}
+
+.glowLine {
+  width: min(58vw, 240px);
+  height: 4px;
+  margin: 14px auto 0;
+  border-radius: 4px;
+  background: linear-gradient(90deg, transparent, #35ffc3, #aaff40, #35ffc3, transparent);
+  box-shadow: 0 0 8px #4cffbf, 0 0 18px #4cffbf, 0 0 28px #9cff47;
+  opacity: 0;
+  animation: lineIn 0.6s ease forwards;
+  animation-delay: 2.8s;
+}
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #dfff75;
+  box-shadow: 0 0 10px #dfff75;
+  animation: twinkle 3s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.p1 { top: -30px; left: 30px; }
+.p2 { top: -10px; right: 20px; }
+.p3 { top: 20px; left: -10px; }
+.p4 { top: 40px; right: -10px; }
+.p5 { top: 60px; left: 20px; }
+
+/* Main */
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  padding: 18px;
+  background: linear-gradient(180deg, #07111d 0%, #0b1828 100%);
+}
+
+.layout {
+  width: min(100%, 980px);
+  min-height: calc(100vh - 36px);
+  display: grid;
+  grid-template-rows: auto auto auto 1fr auto;
+  gap: 16px;
+}
+
+.status {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  padding: 16px 18px;
+  color: var(--text-soft);
+  text-align: center;
+  font-size: clamp(1rem, 2.7vw, 1.2rem);
+  box-shadow: var(--shadow);
+}
+
+.controlPanel {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 16px;
+}
+
+.panelCard {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 22px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.panelTitle {
+  margin: 0 0 12px;
+  font-size: 1.08rem;
+  color: var(--text-soft);
+  font-weight: 600;
+}
+
+.buttonRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.controlButton {
+  min-height: 74px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(24, 42, 60, 0.96) 0%, rgba(14, 24, 35, 0.98) 100%);
+  color: var(--text);
+  font-size: clamp(1rem, 2.8vw, 1.15rem);
+  font-weight: 700;
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.controlButton:active {
+  transform: scale(0.98);
+}
+
+.controlButton--primary {
+  background: linear-gradient(180deg, #144e5b 0%, #0d3138 100%);
+  border-color: rgba(53, 255, 195, 0.42);
+}
+
+.controlButton--secondary {
+  background: linear-gradient(180deg, #4d540f 0%, #31350a 100%);
+  border-color: rgba(170, 255, 64, 0.32);
+}
+
+.trackingList {
+  display: grid;
+  gap: 8px;
+  color: var(--text-soft);
+  font-size: 0.98rem;
+}
+
+.trackingItem strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.cameraWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #020814;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cameraVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  background: #020814;
+}
+
+.cameraOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cameraCrosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.16);
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 150px;
+  border-radius: 28px;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(16, 30, 46, 0.96) 0%, rgba(10, 20, 32, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow);
+}
+
+.message__text {
+  margin: 0;
+  width: 100%;
+  font-size: clamp(2rem, 8vw, 4rem);
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.gridWrap {
+  position: relative;
+  min-height: 100%;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-content: start;
+}
+
+.action {
+  min-height: 112px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  color: var(--text);
+  font-size: clamp(1.55rem, 4.4vw, 2.25rem);
+  font-weight: 700;
+  padding: 20px 16px;
+  box-shadow: var(--shadow);
+  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+}
+
+.action--yes { background: linear-gradient(180deg, #245a3d 0%, #163825 100%); }
+.action--no { background: linear-gradient(180deg, #7a2525 0%, #491515 100%); }
+.action--water { background: linear-gradient(180deg, #106b8e 0%, #0a4358 100%); }
+.action--pain { background: linear-gradient(180deg, #7d4c00 0%, #4f2f00 100%); }
+.action--bathroom { background: linear-gradient(180deg, #4550a6 0%, #2a316a 100%); }
+.action--help { background: linear-gradient(180deg, #7a5d00 0%, #4b3900 100%); }
+
+.action--scan {
+  border-color: rgba(53, 255, 195, 0.95);
+  box-shadow: 0 0 0 3px rgba(53, 255, 195, 0.22), var(--shadow);
+  transform: scale(1.01);
+}
+
+.action--gaze {
+  border-color: rgba(255, 216, 58, 0.98);
+  box-shadow: 0 0 0 3px rgba(255, 216, 58, 0.22), var(--shadow);
+}
+
+.gazeCursor {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.14);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}
+
+.footer {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 0.95rem;
+  padding-bottom: 4px;
+}
+
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes show {
+  to { opacity: 1; }
+}
+
+@keyframes titleIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lineIn {
+  to { opacity: 1; }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.6); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 860px) {
+  .controlPanel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 14px;
+  }
+
+  .layout {
+    min-height: calc(100vh - 28px);
+    gap: 14px;
+  }
+
+  .message {
+    min-height: 132px;
+    border-radius: 22px;
+    padding: 18px;
+  }
+
+  .grid {
+    gap: 12px;
+  }
+
+  .action {
+    min-height: 96px;
+    border-radius: 20px;
+  }
+}
+
+@media (max-width: 420px) {
+  .splash {
+    padding: 16px;
+  }
+
+  .stroke {
+    stroke-width: 10;
+  }
+
+  .buttonRow,
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action {
+    min-height: 88px;
+    font-size: 1.5rem;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section id="splashScreen" class="screen splash" aria-label="Pantalla de inicio">
+      <div class="splash__container">
+        <div class="logoGlow"></div>
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div><svg viewBox="0 0 500 350" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#29e6c9"></stop>
+          <stop offset="60%" stop-color="#9df545"></stop>
+          <stop offset="100%" stop-color="#ffd83a"></stop>
+        </linearGradient>
+      </defs>
+
+      <path class="stroke bubble" d="M70 180 C70 110 120 70 200 70 H300 C380 70 430 110 430 180 C430 250 380 290 300 290 H200 L150 320 L160 285 C110 270 70 235 70 180 Z"></path>
+      <path class="stroke wave" d="M120 180 L150 180 L175 140 L210 220 L250 120 L290 220 L315 180"></path>
+      <path class="stroke spiral" d="M320 180 C350 180 370 200 370 220 C370 245 350 260 325 260 C295 260 270 235 270 205 C270 170 300 145 335 145 C380 145 410 175 410 220"></path>
+    </svg>
+
+    <div class="title">Hablemos</div>
+    <div class="glowLine"></div>
+  </div>
+</section>
+
+<main id="mainScreen" class="screen main hidden" aria-label="Pantalla principal experimental">
+  <div class="layout">
+    <div id="statusText" class="status">Versión experimental. Activa cámara frontal y mira el centro para calibrar.</div>
+
+    <section class="controlPanel" aria-label="Controles experimentales">
+      <div class="panelCard">
+        <h2 class="panelTitle">Acceso experimental</h2>
+        <div class="buttonRow">
+          <button id="startCameraButton" type="button" class="controlButton controlButton--primary">Activar cámara frontal</button>
+          <button id="recalibrateButton" type="button" class="controlButton controlButton--secondary">Recalibrar centro</button>
+        </div>
+        <div class="trackingList" style="margin-top: 14px;">
+          <div class="trackingItem"><strong>Estado:</strong> <span id="trackingState">Sin cámara</span></div>
+          <div class="trackingItem"><strong>Zona estimada:</strong> <span id="zoneState">Sin detección</span></div>
+          <div class="trackingItem"><strong>Barrido:</strong> <span id="scanState">Activo, sin bloqueo</span></div>
+        </div>
+      </div>
+
+      <div class="panelCard">
+        <h2 class="panelTitle">Vista de cámara</h2>
+        <div class="cameraWrap">
+          <video id="cameraVideo" class="cameraVideo" autoplay muted playsinline></video>
+          <div class="cameraOverlay">
+            <div class="cameraCrosshair"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="message" aria-live="polite" aria-atomic="true">
+      <h1 id="messageText" class="message__text">Mira el centro y activa la cámara</h1>
+    </section>
+
+    <section class="gridWrap" aria-label="Opciones de comunicación">
+      <div id="gazeCursor" class="gazeCursor hidden" aria-hidden="true"></div>
+      <div id="actionsGrid" class="grid">
+        <button type="button" class="action action--yes" data-message="Sí">Sí</button>
+        <button type="button" class="action action--no" data-message="No">No</button>
+        <button type="button" class="action action--water" data-message="Agua">Agua</button>
+        <button type="button" class="action action--pain" data-message="Dolor">Dolor</button>
+        <button type="button" class="action action--bathroom" data-message="Baño">Baño</button>
+        <button type="button" class="action action--help" data-message="Ayuda">Ayuda</button>
+      </div>
+    </section>
+
+    <div class="footer">Experimental: cámara frontal + rostro + zonas grandes + barrido detenido por permanencia estimada</div>
+  </div>
+</main>
+
+  </div>  <script>
+    (function () {
+      var splashScreen = document.getElementById('splashScreen');
+      var mainScreen = document.getElementById('mainScreen');
+      var startCameraButton = document.getElementById('startCameraButton');
+      var recalibrateButton = document.getElementById('recalibrateButton');
+      var statusText = document.getElementById('statusText');
+      var trackingState = document.getElementById('trackingState');
+      var zoneState = document.getElementById('zoneState');
+      var scanState = document.getElementById('scanState');
+      var messageText = document.getElementById('messageText');
+      var cameraVideo = document.getElementById('cameraVideo');
+      var actionsGrid = document.getElementById('actionsGrid');
+      var gazeCursor = document.getElementById('gazeCursor');
+      var actionButtons = Array.prototype.slice.call(document.querySelectorAll('.action'));
+
+      var state = {
+        SPLASH_DURATION_MS: 4000,
+        SCAN_INTERVAL_MS: 1100,
+        LOCK_DWELL_MS: 850,
+        SELECT_DWELL_MS: 1700,
+        LOST_FACE_RESET_MS: 1200,
+        CALIBRATION_SAMPLES_REQUIRED: 18,
+        HORIZONTAL_GAIN: 3.8,
+        VERTICAL_GAIN: 5.4,
+        HORIZONTAL_INVERT: true,
+        IRIS_RIGHT: [469, 470, 471, 472],
+        IRIS_LEFT: [474, 475, 476, 477],
+        RIGHT_EYE_OUTER: 33,
+        RIGHT_EYE_INNER: 133,
+        LEFT_EYE_OUTER: 263,
+        LEFT_EYE_INNER: 362,
+        RIGHT_EYE_TOP: 159,
+        RIGHT_EYE_BOTTOM: 145,
+        LEFT_EYE_TOP: 386,
+        LEFT_EYE_BOTTOM: 374,
+        NOSE_TIP: 1,
+        FACE_LEFT: 234,
+        FACE_RIGHT: 454,
+        FACE_TOP: 10,
+        FACE_BOTTOM: 152,
+        hasSpeechSupport: 'speechSynthesis' in window,
+        faceLandmarker: null,
+        mediaStream: null,
+        processing: false,
+        lastVideoTime: -1,
+        scanTimer: null,
+        scanIndex: 0,
+        scanLocked: false,
+        lockedTargetIndex: null,
+        stableTargetIndex: null,
+        stableTargetSince: 0,
+        selectedCooldownUntil: 0,
+        calibrationSamples: [],
+        neutralMetrics: null,
+        lastFaceSeenAt: 0,
+        currentPredictedIndex: null
+      };
+
+      function showMainScreen() {
+        splashScreen.classList.add('hidden');
+        mainScreen.classList.remove('hidden');
+        window.scrollTo(0, 0);
+        startScan();
+      }
+
+      function setStatus(message) {
+        statusText.textContent = message;
+      }
+
+      function setTracking(message) {
+        trackingState.textContent = message;
+      }
+
+      function setZone(message) {
+        zoneState.textContent = message;
+      }
+
+      function setScan(message) {
+        scanState.textContent = message;
+      }
+
+      function chooseSpanishVoice() {
+        if (!state.hasSpeechSupport) {
+          return null;
+        }
+
+        var voices = window.speechSynthesis.getVoices();
+        for (var i = 0; i < voices.length; i += 1) {
+          if (voices[i].lang && voices[i].lang.toLowerCase().indexOf('es') === 0) {
+            return voices[i];
+          }
+        }
+        return null;
+      }
+
+      function speakMessage(text) {
+        if (!state.hasSpeechSupport) {
+          return;
+        }
+
+        window.speechSynthesis.cancel();
+        var utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        var voice = chooseSpanishVoice();
+        if (voice) {
+          utterance.voice = voice;
+        }
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function activateButtonByIndex(index) {
+        var button = actionButtons[index];
+        if (!button) {
+          return;
+        }
+
+        var text = button.getAttribute('data-message');
+        if (!text) {
+          return;
+        }
+
+        messageText.textContent = text;
+        speakMessage(text);
+        state.selectedCooldownUntil = performance.now() + 1200;
+        setStatus('Mensaje emitido. El barrido vuelve a correr.');
+        state.scanLocked = false;
+        state.lockedTargetIndex = null;
+        state.stableTargetSince = performance.now();
+        startScan();
+      }
+
+      function clearButtonHighlights() {
+        actionButtons.forEach(function (button) {
+          button.classList.remove('action--scan');
+          button.classList.remove('action--gaze');
+        });
+      }
+
+      function paintHighlights() {
+        clearButtonHighlights();
+
+        if (Number.isInteger(state.scanIndex) && actionButtons[state.scanIndex]) {
+          actionButtons[state.scanIndex].classList.add('action--scan');
+        }
+
+        if (Number.isInteger(state.currentPredictedIndex) && actionButtons[state.currentPredictedIndex]) {
+          actionButtons[state.currentPredictedIndex].classList.add('action--gaze');
+        }
+      }
+
+      function setScanIndex(index) {
+        state.scanIndex = index;
+        paintHighlights();
+      }
+
+      function startScan() {
+        if (state.scanTimer) {
+          window.clearInterval(state.scanTimer);
+        }
+
+        setScanIndex(0);
+        setScan('Activo, recorriendo opciones');
+
+        state.scanTimer = window.setInterval(function () {
+          if (state.scanLocked) {
+            return;
+          }
+          setScanIndex((state.scanIndex + 1) % actionButtons.length);
+        }, state.SCAN_INTERVAL_MS);
+      }
+
+      function averagePoints(landmarks, indices) {
+        var total = indices.reduce(function (accumulator, index) {
+          var point = landmarks[index];
+          accumulator.x += point.x;
+          accumulator.y += point.y;
+          return accumulator;
+        }, { x: 0, y: 0 });
+
+        return {
+          x: total.x / indices.length,
+          y: total.y / indices.length
+        };
+      }
+
+      function getMetricSample(landmarks) {
+        var irisRight = averagePoints(landmarks, state.IRIS_RIGHT);
+        var irisLeft = averagePoints(landmarks, state.IRIS_LEFT);
+
+        var rightOuter = landmarks[state.RIGHT_EYE_OUTER];
+        var rightInner = landmarks[state.RIGHT_EYE_INNER];
+        var leftOuter = landmarks[state.LEFT_EYE_OUTER];
+        var leftInner = landmarks[state.LEFT_EYE_INNER];
+        var rightTop = landmarks[state.RIGHT_EYE_TOP];
+        var rightBottom = landmarks[state.RIGHT_EYE_BOTTOM];
+        var leftTop = landmarks[state.LEFT_EYE_TOP];
+        var leftBottom = landmarks[state.LEFT_EYE_BOTTOM];
+        var noseTip = landmarks[state.NOSE_TIP];
+        var faceLeft = landmarks[state.FACE_LEFT];
+        var faceRight = landmarks[state.FACE_RIGHT];
+        var faceTop = landmarks[state.FACE_TOP];
+        var faceBottom = landmarks[state.FACE_BOTTOM];
+
+        var rightEyeCenterX = (rightOuter.x + rightInner.x) / 2;
+        var leftEyeCenterX = (leftOuter.x + leftInner.x) / 2;
+        var rightEyeCenterY = (rightTop.y + rightBottom.y) / 2;
+        var leftEyeCenterY = (leftTop.y + leftBottom.y) / 2;
+
+        var rightEyeWidth = Math.max(Math.abs(rightInner.x - rightOuter.x), 0.0001);
+        var leftEyeWidth = Math.max(Math.abs(leftInner.x - leftOuter.x), 0.0001);
+        var rightEyeHeight = Math.max(Math.abs(rightBottom.y - rightTop.y), 0.0001);
+        var leftEyeHeight = Math.max(Math.abs(leftBottom.y - leftTop.y), 0.0001);
+
+        var rightEyeOffsetX = (irisRight.x - rightEyeCenterX) / rightEyeWidth;
+        var leftEyeOffsetX = (irisLeft.x - leftEyeCenterX) / leftEyeWidth;
+        var rightEyeOffsetY = (irisRight.y - rightEyeCenterY) / rightEyeHeight;
+        var leftEyeOffsetY = (irisLeft.y - leftEyeCenterY) / leftEyeHeight;
+
+        var faceCenterX = (faceLeft.x + faceRight.x) / 2;
+        var faceCenterY = (faceTop.y + faceBottom.y) / 2;
+        var faceWidth = Math.max(Math.abs(faceRight.x - faceLeft.x), 0.0001);
+        var faceHeight = Math.max(Math.abs(faceBottom.y - faceTop.y), 0.0001);
+        var headOffsetX = (noseTip.x - faceCenterX) / faceWidth;
+        var headOffsetY = (noseTip.y - faceCenterY) / faceHeight;
+
+        var x = ((rightEyeOffsetX + leftEyeOffsetX) / 2) * 0.72 + headOffsetX * 0.28;
+        var y = ((rightEyeOffsetY + leftEyeOffsetY) / 2) * 0.78 + headOffsetY * 0.22;
+
+        if (state.HORIZONTAL_INVERT) {
+          x *= -1;
+        }
+
+        return { x: x, y: y };
+      }
+
+      function resetCalibration() {
+        state.calibrationSamples = [];
+        state.neutralMetrics = null;
+        setTracking('Calibrando centro');
+        setStatus('Mira el centro de la pantalla durante un momento para calibrar.');
+        messageText.textContent = 'Calibrando mirada estimada';
+      }
+
+      function collectCalibration(sample) {
+        state.calibrationSamples.push(sample);
+        if (state.calibrationSamples.length < state.CALIBRATION_SAMPLES_REQUIRED) {
+          setTracking('Calibrando centro (' + state.calibrationSamples.length + '/' + state.CALIBRATION_SAMPLES_REQUIRED + ')');
+          return false;
+        }
+
+        state.neutralMetrics = state.calibrationSamples.reduce(function (accumulator, value) {
+          accumulator.x += value.x;
+          accumulator.y += value.y;
+          return accumulator;
+        }, { x: 0, y: 0 });
+
+        state.neutralMetrics.x /= state.calibrationSamples.length;
+        state.neutralMetrics.y /= state.calibrationSamples.length;
+        state.calibrationSamples = [];
+        setTracking('Seguimiento estimado activo');
+        setStatus('Calibración completa. Mira una opción para frenar el barrido.');
+        messageText.textContent = 'Mira una opción para detener el barrido';
+        return true;
+      }
+
+      function getProjectedPoint(sample) {
+        if (!state.neutralMetrics) {
+          return null;
+        }
+
+        var rect = actionsGrid.getBoundingClientRect();
+        var normalizedX = Math.max(-1, Math.min(1, (sample.x - state.neutralMetrics.x) * state.HORIZONTAL_GAIN));
+        var normalizedY = Math.max(-1, Math.min(1, (sample.y - state.neutralMetrics.y) * state.VERTICAL_GAIN));
+
+        var x = rect.left + rect.width / 2 + normalizedX * rect.width * 0.42;
+        var y = rect.top + rect.height / 2 + normalizedY * rect.height * 0.4;
+
+        return { x: x, y: y };
+      }
+
+      function moveCursor(point) {
+        if (!point) {
+          gazeCursor.classList.add('hidden');
+          return;
+        }
+
+        gazeCursor.classList.remove('hidden');
+        var wrapRect = actionsGrid.parentElement.getBoundingClientRect();
+        gazeCursor.style.left = (point.x - wrapRect.left) + 'px';
+        gazeCursor.style.top = (point.y - wrapRect.top) + 'px';
+      }
+
+      function findNearestButtonIndex(point) {
+        if (!point) {
+          return null;
+        }
+
+        var nearestIndex = null;
+        var nearestDistance = Number.POSITIVE_INFINITY;
+
+        actionButtons.forEach(function (button, index) {
+          var rect = button.getBoundingClientRect();
+          if (point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom) {
+            nearestIndex = index;
+            nearestDistance = -1;
+            return;
+          }
+
+          var centerX = rect.left + rect.width / 2;
+          var centerY = rect.top + rect.height / 2;
+          var distance = Math.hypot(centerX - point.x, centerY - point.y);
+
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+
+        return nearestIndex;
+      }
+
+      function getButtonLabel(index) {
+        var button = actionButtons[index];
+        return button ? button.getAttribute('data-message') : 'Sin zona';
+      }
+
+      function updatePredictedTarget(index, now) {
+        state.currentPredictedIndex = index;
+        paintHighlights();
+        setZone(getButtonLabel(index));
+
+        if (!Number.isInteger(index)) {
+          return;
+        }
+
+        if (state.stableTargetIndex !== index) {
+          state.stableTargetIndex = index;
+          state.stableTargetSince = now;
+
+          if (state.scanLocked && state.lockedTargetIndex !== index) {
+            state.scanLocked = false;
+            state.lockedTargetIndex = null;
+            setScan('Activo, recorriendo opciones');
+            setStatus('La mirada cambió de zona. El barrido vuelve a correr.');
+          }
+          return;
+        }
+
+        var dwellTime = now - state.stableTargetSince;
+
+        if (!state.scanLocked && dwellTime >= state.LOCK_DWELL_MS) {
+          state.scanLocked = true;
+          state.lockedTargetIndex = index;
+          setScanIndex(index);
+          setScan('Detenido en ' + getButtonLabel(index));
+          setStatus('Barrido detenido por permanencia estimada. Mantén la mirada para confirmar.');
+        }
+
+        if (state.scanLocked && state.lockedTargetIndex === index) {
+          if (dwellTime >= state.SELECT_DWELL_MS && now >= state.selectedCooldownUntil) {
+            activateButtonByIndex(index);
+          }
+        }
+      }
+
+      function handleNoFace(now) {
+        setZone('Sin detección');
+        state.currentPredictedIndex = null;
+        paintHighlights();
+        moveCursor(null);
+
+        if (now - state.lastFaceSeenAt > state.LOST_FACE_RESET_MS) {
+          if (state.scanLocked) {
+            state.scanLocked = false;
+            state.lockedTargetIndex = null;
+            setScan('Activo, recorriendo opciones');
+          }
+          setTracking('Rostro no detectado');
+          setStatus('No se detecta rostro. Revisa luz, distancia y posición frente a la cámara.');
+        }
+      }
+
+      async function ensureFaceLandmarker() {
+        if (state.faceLandmarker) {
+          return state.faceLandmarker;
+        }
+
+        setTracking('Cargando detector facial');
+
+        var module = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest');
+        var vision = module.default || module;
+        var FilesetResolver = vision.FilesetResolver;
+        var FaceLandmarker = vision.FaceLandmarker;
+
+        var visionFileset = await FilesetResolver.forVisionTasks(
+          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+        );
+
+        state.faceLandmarker = await FaceLandmarker.createFromOptions(visionFileset, {
+          baseOptions: {
+            modelAssetPath:
+              'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task'
+          },
+          runningMode: 'VIDEO',
+          numFaces: 1,
+          minFaceDetectionConfidence: 0.6,
+          minFacePresenceConfidence: 0.6,
+          minTrackingConfidence: 0.6
+        });
+
+        return state.faceLandmarker;
+      }
+
+      async function startFrontCamera() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          setTracking('Cámara no disponible');
+          setStatus('Este navegador no permite acceso a cámara frontal.');
+          return;
+        }
+
+        startCameraButton.disabled = true;
+        setStatus('Solicitando permiso de cámara frontal...');
+
+        try {
+          await ensureFaceLandmarker();
+
+          state.mediaStream = await navigator.mediaDevices.getUserMedia({
+            audio: false,
+            video: {
+              facingMode: { ideal: 'user' },
+              width: { ideal: 640 },
+              height: { ideal: 480 }
+            }
+          });
+
+          cameraVideo.srcObject = state.mediaStream;
+          await cameraVideo.play();
+          resetCalibration();
+          state.processing = true;
+          state.lastVideoTime = -1;
+          state.lastFaceSeenAt = performance.now();
+          processVideoFrame();
+        } catch (error) {
+          console.error(error);
+          setTracking('Error de cámara');
+          setStatus('No se pudo iniciar cámara frontal. Revisa permiso de cámara y carga segura HTTPS o localhost.');
+        } finally {
+          startCameraButton.disabled = false;
+        }
+      }
+
+      function processVideoFrame() {
+        if (!state.processing || !state.faceLandmarker) {
+          return;
+        }
+
+        var now = performance.now();
+
+        if (cameraVideo.readyState < 2) {
+          window.requestAnimationFrame(processVideoFrame);
+          return;
+        }
+
+        if (cameraVideo.currentTime === state.lastVideoTime) {
+          window.requestAnimationFrame(processVideoFrame);
+          return;
+        }
+
+        state.lastVideoTime = cameraVideo.currentTime;
+
+        var result = state.faceLandmarker.detectForVideo(cameraVideo, now);
+        var landmarks = result.faceLandmarks && result.faceLandmarks[0] ? result.faceLandmarks[0] : null;
+
+        if (!landmarks) {
+          handleNoFace(now);
+          window.requestAnimationFrame(processVideoFrame);
+          return;
+        }
+
+        state.lastFaceSeenAt = now;
+        var sample = getMetricSample(landmarks);
+
+        if (!state.neutralMetrics) {
+          collectCalibration(sample);
+          moveCursor(null);
+          window.requestAnimationFrame(processVideoFrame);
+          return;
+        }
+
+        setTracking('Seguimiento estimado activo');
+        var projectedPoint = getProjectedPoint(sample);
+        moveCursor(projectedPoint);
+        var predictedIndex = findNearestButtonIndex(projectedPoint);
+        updatePredictedTarget(predictedIndex, now);
+
+        if (!state.scanLocked) {
+          setScan('Activo, recorriendo opciones');
+        }
+
+        window.requestAnimationFrame(processVideoFrame);
+      }
+
+      actionButtons.forEach(function (button, index) {
+        button.addEventListener('click', function () {
+          activateButtonByIndex(index);
+        });
+      });
+
+      startCameraButton.addEventListener('click', startFrontCamera);
+      recalibrateButton.addEventListener('click', resetCalibration);
+
+      window.setTimeout(showMainScreen, state.SPLASH_DURATION_MS);
+    })();
+  </script></body>
+</html>
