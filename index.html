@@ -327,15 +327,15 @@ button {
 
 .gazeCursor {
   position: absolute;
-  width: 28px;
-  height: 28px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.96);
-  background: rgba(255, 255, 255, 0.14);
-  box-shadow: 0 0 14px rgba(255, 255, 255, 0.22);
+  border: 4px solid rgba(255, 255, 255, 0.98);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.34), 0 0 28px rgba(255, 216, 58, 0.2);
   transform: translate(-50%, -50%);
   pointer-events: none;
-  z-index: 4;
+  z-index: 6;
 }
 
 .action {
@@ -477,7 +477,7 @@ button {
 
 <main id="mainScreen" class="screen main hidden" aria-label="Pantalla principal experimental">
   <div class="layout">
-    <div id="statusText" class="status">Versión experimental estabilizada. La cámara se abrirá sola, hará 3 calibraciones, devolverá el cursor redondo de mirada y el barrido se detendrá solo durante una ventana de confirmación antes de seguir.</div>
+    <div id="statusText" class="status">Versión experimental estabilizada. El cursor de mirada vuelve a mostrarse, el barrido se detiene en la palabra escrita y no seguirá hasta que esa palabra se confirme con parpadeo largo.</div>
 
     <section class="trackingPanel" aria-label="Estado experimental">
       <div class="trackingRow"><div><strong>Estado:</strong> <span id="trackingState">Esperando inicio</span></div></div>
@@ -503,7 +503,7 @@ button {
       </div>
     </section>
 
-    <div class="footer">Experimental: cursor de mirada visible, barrido más lento, filtrado de zona y ventana de confirmación antes de reanudar</div>
+    <div class="footer">Experimental: cursor de mirada visible, barrido detenido hasta confirmación y parpadeo largo más tolerante</div>
   </div>
 </main>
 
@@ -543,10 +543,9 @@ button {
         SPLASH_DURATION_MS: 4000,
         SCAN_INTERVAL_MS: 2600,
         LOCK_DWELL_MS: 1100,
-        CONFIRM_WINDOW_MS: 2600,
-        LONG_BLINK_MS: 720,
-        BLINK_THRESHOLD_FACTOR: 0.52,
-        MIN_CLOSED_EYE_RATIO: 0.08,
+        LONG_BLINK_MS: 650,
+        BLINK_THRESHOLD_FACTOR: 0.64,
+        MIN_CLOSED_EYE_RATIO: 0.1,
         LOST_FACE_RESET_MS: 1200,
         CALIBRATION_STEPS: 3,
         CALIBRATION_SAMPLES_PER_STEP: 12,
@@ -582,16 +581,18 @@ button {
         candidateTargetIndex: null,
         stableTargetIndex: null,
         stableTargetSince: 0,
-        confirmDeadline: 0,
         blinkCooldownUntil: 0,
         blinkStartTime: 0,
+        closedFrameCount: 0,
+        openFrameCount: 0,
         calibrationStep: 1,
         calibrationSamples: [],
         stepMetrics: [],
         neutralMetrics: null,
         lastFaceSeenAt: 0,
         recentPredictions: [],
-        smoothedPoint: null
+        smoothedPoint: null,
+        smoothedEyeOpenRatio: null
       };
 
       function showMainScreen() {
@@ -968,7 +969,6 @@ button {
         state.lockedTargetIndex = null;
         state.candidateTargetIndex = null;
         state.stableTargetIndex = null;
-        state.confirmDeadline = 0;
         state.recentPredictions = [];
         paintHighlights();
         resetMessageVisual();
@@ -976,11 +976,7 @@ button {
       }
 
       function resumeScanAfterConfirmationWindow() {
-        clearPreselection();
-        setZone('Sin detección');
-        setScan('Activo, recorriendo opciones lentamente');
-        setBlink('Ventana agotada');
-        setStatus('No hubo confirmación. El barrido vuelve a correr.');
+        return;
       }
 
       function confirmSelection(index) {
@@ -993,12 +989,14 @@ button {
         speakMessage(label);
         state.blinkCooldownUntil = performance.now() + 1200;
         state.blinkStartTime = 0;
+        state.closedFrameCount = 0;
+        state.openFrameCount = 0;
         state.scanLocked = false;
         state.lockedTargetIndex = null;
         state.candidateTargetIndex = null;
         state.stableTargetIndex = null;
-        state.confirmDeadline = 0;
         state.recentPredictions = [];
+        state.smoothedEyeOpenRatio = null;
         paintHighlights();
         setZone('Sin detección');
         setScan('Activo, recorriendo opciones lentamente');
@@ -1017,9 +1015,7 @@ button {
         }
 
         if (state.scanLocked) {
-          if (now >= state.confirmDeadline) {
-            resumeScanAfterConfirmationWindow();
-          }
+          setZone(getButtonLabel(state.lockedTargetIndex));
           return;
         }
 
@@ -1039,11 +1035,10 @@ button {
           state.scanLocked = true;
           state.lockedTargetIndex = index;
           state.candidateTargetIndex = index;
-          state.confirmDeadline = now + state.CONFIRM_WINDOW_MS;
           paintHighlights();
-          setScan('Detenido para confirmar');
+          setScan('Detenido hasta confirmar');
           setCandidateMessage(getButtonLabel(index));
-          setStatus('Palabra escrita en el área de texto. Parpadeo largo para confirmar. Si no confirmas, el barrido seguirá solo.');
+          setStatus('Palabra escrita en el área de texto. El barrido no seguirá hasta confirmar con parpadeo largo.');
         }
       }
 
@@ -1053,24 +1048,38 @@ button {
           return;
         }
 
-        var closedThreshold = Math.max(state.MIN_CLOSED_EYE_RATIO, state.neutralMetrics.eyeOpenRatio * state.BLINK_THRESHOLD_FACTOR);
-        var eyesClosed = sample.eyeOpenRatio <= closedThreshold;
+        if (state.smoothedEyeOpenRatio === null) {
+          state.smoothedEyeOpenRatio = sample.eyeOpenRatio;
+        } else {
+          state.smoothedEyeOpenRatio = state.smoothedEyeOpenRatio * 0.72 + sample.eyeOpenRatio * 0.28;
+        }
 
-        if (eyesClosed) {
-          if (!state.blinkStartTime) {
+        var closedThreshold = Math.max(state.MIN_CLOSED_EYE_RATIO, state.neutralMetrics.eyeOpenRatio * state.BLINK_THRESHOLD_FACTOR);
+        var eyesClosedNow = state.smoothedEyeOpenRatio <= closedThreshold;
+
+        if (eyesClosedNow) {
+          state.closedFrameCount += 1;
+          state.openFrameCount = 0;
+
+          if (state.closedFrameCount >= 2 && !state.blinkStartTime) {
             state.blinkStartTime = now;
           }
 
-          var closedDuration = now - state.blinkStartTime;
-          setBlink('Cerrados (' + Math.round(closedDuration) + ' ms)');
+          if (state.blinkStartTime) {
+            var closedDuration = now - state.blinkStartTime;
+            setBlink('Cerrados (' + Math.round(closedDuration) + ' ms)');
 
-          if (state.scanLocked && state.lockedTargetIndex !== null && now >= state.blinkCooldownUntil && closedDuration >= state.LONG_BLINK_MS) {
-            confirmSelection(state.lockedTargetIndex);
+            if (state.scanLocked && state.lockedTargetIndex !== null && now >= state.blinkCooldownUntil && closedDuration >= state.LONG_BLINK_MS) {
+              confirmSelection(state.lockedTargetIndex);
+            }
           }
           return;
         }
 
-        if (state.blinkStartTime) {
+        state.openFrameCount += 1;
+        state.closedFrameCount = 0;
+
+        if (state.openFrameCount >= 2 && state.blinkStartTime) {
           var blinkDuration = now - state.blinkStartTime;
           state.blinkStartTime = 0;
 
@@ -1080,7 +1089,7 @@ button {
           }
         }
 
-        if (state.scanLocked && state.confirmDeadline > now) {
+        if (state.scanLocked) {
           setBlink('Esperando confirmación');
           return;
         }
@@ -1089,21 +1098,24 @@ button {
       }
 
       function handleNoFace(now) {
-        state.candidateTargetIndex = null;
+        state.candidateTargetIndex = state.scanLocked ? state.lockedTargetIndex : null;
         state.stableTargetIndex = null;
         state.blinkStartTime = 0;
+        state.closedFrameCount = 0;
+        state.openFrameCount = 0;
         state.recentPredictions = [];
-        setZone('Sin detección');
+        setZone(state.scanLocked && state.lockedTargetIndex !== null ? getButtonLabel(state.lockedTargetIndex) : 'Sin detección');
         setBlink('Sin detección');
         paintHighlights();
         moveGazeCursor(null);
 
         if (now - state.lastFaceSeenAt > state.LOST_FACE_RESET_MS) {
-          if (state.scanLocked) {
-            resumeScanAfterConfirmationWindow();
-          }
           setTracking('Rostro no detectado');
-          setStatus('No se detecta rostro. Revisa luz, distancia y posición frente a la cámara.');
+          if (state.scanLocked && state.lockedTargetIndex !== null) {
+            setStatus('Rostro no detectado. La palabra sigue detenida hasta que se confirme.');
+          } else {
+            setStatus('No se detecta rostro. Revisa luz, distancia y posición frente a la cámara.');
+          }
         }
       }
 
@@ -1224,6 +1236,8 @@ button {
 
         if (!state.scanLocked) {
           setScan('Activo, recorriendo opciones lentamente');
+        } else {
+          setScan('Detenido hasta confirmar');
         }
 
         window.requestAnimationFrame(processVideoFrame);
