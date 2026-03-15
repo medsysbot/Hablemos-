@@ -2,7 +2,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hablemos Experimental B</title>
+  <title>Hablemos Experimental Estable</title>
   <style>
     :root {
       --bg: #06111f;
@@ -13,7 +13,6 @@
       --scan: rgba(53, 255, 195, 0.95);
       --candidate: rgba(255, 216, 58, 0.98);
       --confirm: rgba(255, 255, 255, 0.96);
-      --confirm-bg: rgba(255, 255, 255, 0.06);
     }* {
   box-sizing: border-box;
 }
@@ -166,29 +165,31 @@ button {
   width: min(100%, 940px);
   min-height: calc(100vh - 36px);
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-rows: auto auto auto 1fr auto;
   gap: 16px;
 }
 
+.status,
+.trackingPanel,
+.confirmZone,
+.message {
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(16, 30, 46, 0.96) 0%, rgba(10, 20, 32, 0.98) 100%);
+}
+
 .status {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 20px;
   padding: 16px 18px;
   color: var(--text-soft);
   text-align: center;
   font-size: clamp(1rem, 2.7vw, 1.2rem);
-  box-shadow: var(--shadow);
 }
 
 .trackingPanel {
   display: grid;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 22px;
   padding: 16px;
-  box-shadow: var(--shadow);
 }
 
 .trackingRow {
@@ -203,32 +204,19 @@ button {
   font-weight: 700;
 }
 
-.interactionSurface {
-  position: relative;
-  display: grid;
-  grid-template-rows: auto auto 1fr;
-  gap: 14px;
-}
-
 .confirmZone {
-  min-height: 92px;
+  min-height: 86px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   padding: 16px;
-  border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, rgba(18, 31, 48, 0.95) 0%, rgba(10, 19, 31, 0.98) 100%);
   color: var(--text-soft);
-  box-shadow: var(--shadow);
-  transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
 }
 
 .confirmZone--ready {
   border-color: rgba(255, 255, 255, 0.42);
   box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.14), var(--shadow);
-  background: linear-gradient(180deg, rgba(28, 44, 66, 0.98) 0%, rgba(14, 24, 35, 1) 100%);
   color: var(--text);
 }
 
@@ -238,11 +226,7 @@ button {
   justify-content: center;
   text-align: center;
   min-height: 156px;
-  border-radius: 28px;
   padding: 24px;
-  background: linear-gradient(180deg, rgba(16, 30, 46, 0.96) 0%, rgba(10, 20, 32, 0.98) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: var(--shadow);
 }
 
 .message__text {
@@ -270,9 +254,9 @@ button {
 }
 
 .gridScroller {
-  max-height: min(48vh, 460px);
+  max-height: min(50vh, 470px);
   overflow-y: auto;
-  padding-right: 64px;
+  padding-right: 72px;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
 }
@@ -293,37 +277,20 @@ button {
   align-content: start;
 }
 
-.gazeCursor {
-  position: absolute;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 4px solid rgba(255, 255, 255, 0.98);
-  background: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 0 18px rgba(255, 255, 255, 0.34), 0 0 28px rgba(255, 216, 58, 0.2);
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 6;
-}
-
 .scrollButton {
   position: absolute;
   right: 8px;
-  width: 50px;
-  height: 50px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: linear-gradient(180deg, rgba(30, 46, 62, 0.98) 0%, rgba(14, 24, 35, 1) 100%);
   color: var(--text);
-  font-size: 1.55rem;
+  font-size: 1.6rem;
   font-weight: 700;
   box-shadow: var(--shadow);
   z-index: 5;
-  opacity: 0.96;
-}
-
-.scrollButton:disabled {
-  opacity: 0.35;
+  opacity: 0.98;
 }
 
 .scrollButton--up {
@@ -332,6 +299,12 @@ button {
 
 .scrollButton--down {
   bottom: 8px;
+}
+
+.scrollButton--active {
+  border-color: var(--scan);
+  box-shadow: 0 0 0 3px rgba(53, 255, 195, 0.22), var(--shadow);
+  transform: scale(1.03);
 }
 
 .action {
@@ -414,19 +387,6 @@ button {
   background: #020814;
 }
 
-.cameraTarget {
-  position: absolute;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.84);
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.18);
-  transform: translate(-50%, -50%);
-  left: 50%;
-  top: 50%;
-  pointer-events: none;
-}
-
 .cameraCard__help {
   margin: 0;
   text-align: center;
@@ -475,8 +435,6 @@ button {
 
   .message {
     min-height: 136px;
-    border-radius: 22px;
-    padding: 18px;
   }
 
   .grid {
@@ -490,11 +448,6 @@ button {
 
   .confirmZone {
     min-height: 84px;
-  }
-
-  .gridScroller {
-    max-height: min(50vh, 420px);
-    padding-right: 58px;
   }
 }
 
@@ -518,6 +471,10 @@ button {
 
   .cameraCard {
     padding: 14px;
+  }
+
+  .gridScroller {
+    padding-right: 62px;
   }
 }
 
@@ -552,53 +509,47 @@ button {
 
 <main id="mainScreen" class="screen main hidden" aria-label="Pantalla principal experimental">
   <div class="layout">
-    <div id="statusText" class="status">Modo experimental B. El barrido recorre lento. Si tu mirada cae sobre la opción que está marcada, se detiene y escribe la palabra. Luego mira arriba y haz parpadeo largo para confirmar.</div>
+    <div id="statusText" class="status">Modo estable activo. El cursor se eliminó. El barrido recorre flecha arriba, flecha abajo y botones. Parpadeo largo activa el elemento marcado; un segundo parpadeo largo confirma la palabra.</div>
 
     <section class="trackingPanel" aria-label="Estado experimental">
       <div class="trackingRow"><div><strong>Estado:</strong> <span id="trackingState">Esperando inicio</span></div></div>
       <div class="trackingRow"><div><strong>Calibración:</strong> <span id="calibrationState">Pendiente</span></div></div>
-      <div class="trackingRow"><div><strong>Zona estimada:</strong> <span id="zoneState">Sin detección</span></div></div>
       <div class="trackingRow"><div><strong>Barrido:</strong> <span id="scanState">Aún no iniciado</span></div></div>
       <div class="trackingRow"><div><strong>Confirmación:</strong> <span id="confirmState">No armada</span></div></div>
       <div class="trackingRow"><div><strong>Ojos:</strong> <span id="blinkState">Sin calibrar</span></div></div>
     </section>
 
-    <section id="interactionSurface" class="interactionSurface" aria-label="Área interactiva">
-      <div id="gazeCursor" class="gazeCursor hidden" aria-hidden="true"></div>
+    <div id="confirmZone" class="confirmZone">Tras elegir una palabra, un segundo parpadeo largo la confirma</div>
 
-      <div id="confirmZone" class="confirmZone">Lleva la mirada aquí para armar la confirmación y luego haz parpadeo largo</div>
+    <section id="messagePanel" class="message" aria-live="polite" aria-atomic="true">
+      <h1 id="messageText" class="message__text">Iniciando cámara y calibración</h1>
+    </section>
 
-      <section id="messagePanel" class="message" aria-live="polite" aria-atomic="true">
-        <h1 id="messageText" class="message__text">Iniciando cámara y calibración</h1>
-      </section>
+    <section class="gridWrap" aria-label="Opciones de comunicación">
+      <button id="scrollUpButton" type="button" class="scrollButton scrollButton--up" aria-label="Subir">↑</button>
+      <button id="scrollDownButton" type="button" class="scrollButton scrollButton--down" aria-label="Bajar">↓</button>
 
-      <div class="gridWrap">
-        <button id="scrollUpButton" type="button" class="scrollButton scrollButton--up" aria-label="Subir">↑</button>
-        <button id="scrollDownButton" type="button" class="scrollButton scrollButton--down" aria-label="Bajar">↓</button>
-
-        <div id="gridScroller" class="gridScroller">
-          <section id="actionsGrid" class="grid" aria-label="Opciones de comunicación">
-            <button type="button" class="action action--yes" data-message="Sí">Sí</button>
-            <button type="button" class="action action--no" data-message="No">No</button>
-            <button type="button" class="action action--water" data-message="Agua">Agua</button>
-            <button type="button" class="action action--pain" data-message="Dolor">Dolor</button>
-            <button type="button" class="action action--bathroom" data-message="Baño">Baño</button>
-            <button type="button" class="action action--help" data-message="Ayuda">Ayuda</button>
-          </section>
+      <div id="gridScroller" class="gridScroller">
+        <div id="actionsGrid" class="grid">
+          <button type="button" class="action action--yes" data-message="Sí">Sí</button>
+          <button type="button" class="action action--no" data-message="No">No</button>
+          <button type="button" class="action action--water" data-message="Agua">Agua</button>
+          <button type="button" class="action action--pain" data-message="Dolor">Dolor</button>
+          <button type="button" class="action action--bathroom" data-message="Baño">Baño</button>
+          <button type="button" class="action action--help" data-message="Ayuda">Ayuda</button>
         </div>
       </div>
     </section>
 
-    <div class="footer">Experimental B: cursor visible, confirmación arriba, barrido lento y flechas flotantes arriba/abajo</div>
+    <div class="footer">Barrido integrado con flechas arriba y abajo, parpadeo largo estable y selección en dos pasos</div>
   </div>
 </main>
 
 <div id="cameraModal" class="cameraModal hidden" aria-label="Calibración de cámara">
   <div class="cameraCard">
-    <p class="cameraCard__title">Sigue el punto para calibrar mirada estimada</p>
+    <p class="cameraCard__title">Mantén los ojos abiertos para calibrar el parpadeo</p>
     <div class="cameraWrap">
       <video id="cameraVideo" class="cameraVideo" autoplay muted playsinline></video>
-      <div id="cameraTarget" class="cameraTarget"></div>
     </div>
     <p id="cameraHelpText" class="cameraCard__help">La cámara se cerrará sola cuando termine la calibración.</p>
   </div>
@@ -611,36 +562,28 @@ button {
       var statusText = document.getElementById('statusText');
       var trackingState = document.getElementById('trackingState');
       var calibrationState = document.getElementById('calibrationState');
-      var zoneState = document.getElementById('zoneState');
       var scanState = document.getElementById('scanState');
       var confirmState = document.getElementById('confirmState');
       var blinkState = document.getElementById('blinkState');
-      var interactionSurface = document.getElementById('interactionSurface');
       var confirmZone = document.getElementById('confirmZone');
       var messagePanel = document.getElementById('messagePanel');
       var messageText = document.getElementById('messageText');
-      var gazeCursor = document.getElementById('gazeCursor');
-      var gridScroller = document.getElementById('gridScroller');
       var scrollUpButton = document.getElementById('scrollUpButton');
       var scrollDownButton = document.getElementById('scrollDownButton');
+      var gridScroller = document.getElementById('gridScroller');
       var cameraModal = document.getElementById('cameraModal');
       var cameraHelpText = document.getElementById('cameraHelpText');
-      var cameraTarget = document.getElementById('cameraTarget');
       var cameraVideo = document.getElementById('cameraVideo');
       var actionButtons = Array.prototype.slice.call(document.querySelectorAll('.action'));
 
       var state = {
         SPLASH_DURATION_MS: 4000,
-        SCAN_INTERVAL_MS: 2600,
-        MATCH_DWELL_MS: 1100,
-        CONFIRM_ZONE_DWELL_MS: 900,
-        LONG_BLINK_MS: 750,
+        SCAN_INTERVAL_MS: 2400,
+        LONG_BLINK_MS: 700,
         BLINK_THRESHOLD_FACTOR: 0.63,
         MIN_CLOSED_EYE_RATIO: 0.10,
+        CALIBRATION_SAMPLES_REQUIRED: 24,
         LOST_FACE_RESET_MS: 1200,
-        CALIBRATION_SAMPLES_PER_STEP: 12,
-        CALIBRATION_SEQUENCE: ['center', 'left', 'right', 'up'],
-        STABILITY_BUFFER_SIZE: 5,
         IRIS_RIGHT: [469, 470, 471, 472],
         IRIS_LEFT: [474, 475, 476, 477],
         RIGHT_EYE_OUTER: 33,
@@ -651,35 +594,24 @@ button {
         RIGHT_EYE_BOTTOM: 145,
         LEFT_EYE_TOP: 386,
         LEFT_EYE_BOTTOM: 374,
-        NOSE_TIP: 1,
-        FACE_LEFT: 234,
-        FACE_RIGHT: 454,
-        FACE_TOP: 10,
-        FACE_BOTTOM: 152,
         hasSpeechSupport: 'speechSynthesis' in window,
         faceLandmarker: null,
         mediaStream: null,
         processing: false,
         lastVideoTime: -1,
         scanTimer: null,
-        scanIndex: 0,
-        selectedIndex: null,
-        selectedWord: '',
-        confirmZoneReady: false,
-        confirmZoneSince: 0,
-        gazeMatchSince: 0,
-        gazeMatchIndex: null,
+        scanSequence: [],
+        scanPosition: 0,
+        pendingWord: '',
+        waitingConfirm: false,
         blinkStartTime: 0,
         closedFrameCount: 0,
         openFrameCount: 0,
         blinkCooldownUntil: 0,
-        currentCalibrationKey: null,
         calibrationSamples: [],
-        calibrationMetrics: {},
-        lastFaceSeenAt: 0,
-        smoothedPoint: null,
+        baselineEyeOpenRatio: null,
         smoothedEyeOpenRatio: null,
-        recentTargets: []
+        lastFaceSeenAt: 0
       };
 
       function setStatus(message) {
@@ -692,10 +624,6 @@ button {
 
       function setCalibration(message) {
         calibrationState.textContent = message;
-      }
-
-      function setZone(message) {
-        zoneState.textContent = message;
       }
 
       function setScan(message) {
@@ -761,91 +689,83 @@ button {
 
       function updateScrollButtons() {
         var maxScroll = gridScroller.scrollHeight - gridScroller.clientHeight;
-        var canScroll = maxScroll > 10;
-        scrollUpButton.disabled = !canScroll || gridScroller.scrollTop <= 4;
-        scrollDownButton.disabled = !canScroll || gridScroller.scrollTop >= maxScroll - 4;
+        scrollUpButton.disabled = gridScroller.scrollTop <= 4;
+        scrollDownButton.disabled = gridScroller.scrollTop >= maxScroll - 4;
       }
 
-      function paintButtons(gazeButtonIndex) {
-        actionButtons.forEach(function (button, index) {
-          button.classList.toggle('action--scan', state.selectedIndex === null && index === state.scanIndex);
-          button.classList.toggle('action--candidate', (state.selectedIndex === null && index === gazeButtonIndex) || (state.selectedIndex !== null && index === state.selectedIndex));
+      function buildScanSequence() {
+        state.scanSequence = ['up', 'down'];
+        actionButtons.forEach(function (_, index) {
+          state.scanSequence.push('button:' + index);
         });
       }
 
-      function moveGazeCursor(point) {
-        if (!point) {
-          gazeCursor.classList.add('hidden');
+      function getCurrentScanTarget() {
+        return state.scanSequence[state.scanPosition] || 'button:0';
+      }
+
+      function paintScanTarget() {
+        var current = getCurrentScanTarget();
+
+        scrollUpButton.classList.toggle('scrollButton--active', !state.waitingConfirm && current === 'up');
+        scrollDownButton.classList.toggle('scrollButton--active', !state.waitingConfirm && current === 'down');
+
+        actionButtons.forEach(function (button, index) {
+          var currentButton = current === 'button:' + index;
+          var pendingButton = state.waitingConfirm && state.pendingWord === button.getAttribute('data-message');
+          button.classList.toggle('action--scan', !state.waitingConfirm && currentButton);
+          button.classList.toggle('action--candidate', pendingButton);
+        });
+      }
+
+      function nextScanPosition() {
+        if (state.waitingConfirm) {
+          return;
+        }
+        state.scanPosition = (state.scanPosition + 1) % state.scanSequence.length;
+        paintScanTarget();
+      }
+
+      function activateCurrentTarget() {
+        var current = getCurrentScanTarget();
+
+        if (!state.waitingConfirm && current === 'up') {
+          gridScroller.scrollBy({ top: -220, left: 0, behavior: 'smooth' });
+          setStatus('Desplazando hacia arriba.');
           return;
         }
 
-        var surfaceRect = interactionSurface.getBoundingClientRect();
-        gazeCursor.classList.remove('hidden');
-        gazeCursor.style.left = (point.x - surfaceRect.left) + 'px';
-        gazeCursor.style.top = (point.y - surfaceRect.top) + 'px';
-      }
-
-      function showMainScreen() {
-        splashScreen.classList.add('hidden');
-        mainScreen.classList.remove('hidden');
-        window.scrollTo(0, 0);
-        startScan();
-        updateScrollButtons();
-        autoStartCamera();
-      }
-
-      function startScan() {
-        if (state.scanTimer) {
-          window.clearInterval(state.scanTimer);
-        }
-
-        setScan('Activo, recorriendo opciones lentamente');
-        state.scanTimer = window.setInterval(function () {
-          if (state.selectedIndex !== null) {
-            return;
-          }
-          state.scanIndex = (state.scanIndex + 1) % actionButtons.length;
-          paintButtons(null);
-        }, state.SCAN_INTERVAL_MS);
-      }
-
-      function lockSelection(index) {
-        state.selectedIndex = index;
-        state.selectedWord = actionButtons[index].getAttribute('data-message') || '';
-        state.gazeMatchSince = 0;
-        state.gazeMatchIndex = null;
-        state.confirmZoneReady = false;
-        state.confirmZoneSince = 0;
-        setCandidateWord(state.selectedWord);
-        setScan('Detenido en palabra');
-        setConfirm('Mira arriba para armar');
-        setStatus('Palabra escrita en el área de texto. Mira arriba y luego haz parpadeo largo para confirmar.');
-      }
-
-      function clearSelectionAfterConfirm() {
-        state.selectedIndex = null;
-        state.selectedWord = '';
-        state.confirmZoneReady = false;
-        state.confirmZoneSince = 0;
-        state.blinkStartTime = 0;
-        state.closedFrameCount = 0;
-        state.openFrameCount = 0;
-        resetMessageVisual();
-        setConfirm('No armada');
-        setScan('Activo, recorriendo opciones lentamente');
-      }
-
-      function confirmSelectedWord() {
-        if (state.selectedIndex === null || !state.selectedWord) {
+        if (!state.waitingConfirm && current === 'down') {
+          gridScroller.scrollBy({ top: 220, left: 0, behavior: 'smooth' });
+          setStatus('Desplazando hacia abajo.');
           return;
         }
 
-        setConfirmedWord(state.selectedWord);
-        speakMessage(state.selectedWord);
-        setStatus('Mensaje confirmado y reproducido. El barrido continúa.');
-        setBlink('Confirmado');
-        state.blinkCooldownUntil = performance.now() + 1200;
-        clearSelectionAfterConfirm();
+        if (!state.waitingConfirm && current.indexOf('button:') === 0) {
+          var index = Number(current.split(':')[1]);
+          state.pendingWord = actionButtons[index].getAttribute('data-message') || '';
+          state.waitingConfirm = true;
+          confirmZone.classList.add('confirmZone--ready');
+          setCandidateWord(state.pendingWord);
+          setConfirm('Lista para confirmar');
+          setScan('Detenido esperando confirmación');
+          setStatus('Palabra escrita. Haz otro parpadeo largo para confirmar.');
+          paintScanTarget();
+          return;
+        }
+
+        if (state.waitingConfirm && state.pendingWord) {
+          setConfirmedWord(state.pendingWord);
+          speakMessage(state.pendingWord);
+          state.pendingWord = '';
+          state.waitingConfirm = false;
+          confirmZone.classList.remove('confirmZone--ready');
+          setConfirm('No armada');
+          setScan('Activo, recorriendo opciones lentamente');
+          setStatus('Mensaje confirmado y reproducido. El barrido continúa.');
+          setBlink('Confirmado');
+          paintScanTarget();
+        }
       }
 
       function averagePoints(landmarks, indices) {
@@ -862,10 +782,7 @@ button {
         };
       }
 
-      function getMetricSample(landmarks) {
-        var irisRight = averagePoints(landmarks, state.IRIS_RIGHT);
-        var irisLeft = averagePoints(landmarks, state.IRIS_LEFT);
-
+      function getEyeSample(landmarks) {
         var rightOuter = landmarks[state.RIGHT_EYE_OUTER];
         var rightInner = landmarks[state.RIGHT_EYE_INNER];
         var leftOuter = landmarks[state.LEFT_EYE_OUTER];
@@ -874,307 +791,28 @@ button {
         var rightBottom = landmarks[state.RIGHT_EYE_BOTTOM];
         var leftTop = landmarks[state.LEFT_EYE_TOP];
         var leftBottom = landmarks[state.LEFT_EYE_BOTTOM];
-        var noseTip = landmarks[state.NOSE_TIP];
-        var faceLeft = landmarks[state.FACE_LEFT];
-        var faceRight = landmarks[state.FACE_RIGHT];
-        var faceTop = landmarks[state.FACE_TOP];
-        var faceBottom = landmarks[state.FACE_BOTTOM];
-
-        var rightEyeCenterX = (rightOuter.x + rightInner.x) / 2;
-        var leftEyeCenterX = (leftOuter.x + leftInner.x) / 2;
-        var rightEyeCenterY = (rightTop.y + rightBottom.y) / 2;
-        var leftEyeCenterY = (leftTop.y + leftBottom.y) / 2;
 
         var rightEyeWidth = Math.max(Math.abs(rightInner.x - rightOuter.x), 0.0001);
         var leftEyeWidth = Math.max(Math.abs(leftInner.x - leftOuter.x), 0.0001);
         var rightEyeHeight = Math.max(Math.abs(rightBottom.y - rightTop.y), 0.0001);
         var leftEyeHeight = Math.max(Math.abs(leftBottom.y - leftTop.y), 0.0001);
 
-        var rightEyeOffsetX = (irisRight.x - rightEyeCenterX) / rightEyeWidth;
-        var leftEyeOffsetX = (irisLeft.x - leftEyeCenterX) / leftEyeWidth;
-        var rightEyeOffsetY = (irisRight.y - rightEyeCenterY) / rightEyeHeight;
-        var leftEyeOffsetY = (irisLeft.y - leftEyeCenterY) / leftEyeHeight;
-
-        var faceCenterX = (faceLeft.x + faceRight.x) / 2;
-        var faceCenterY = (faceTop.y + faceBottom.y) / 2;
-        var faceWidth = Math.max(Math.abs(faceRight.x - faceLeft.x), 0.0001);
-        var faceHeight = Math.max(Math.abs(faceBottom.y - faceTop.y), 0.0001);
-        var headOffsetX = (noseTip.x - faceCenterX) / faceWidth;
-        var headOffsetY = (noseTip.y - faceCenterY) / faceHeight;
-
-        var x = ((rightEyeOffsetX + leftEyeOffsetX) / 2) * 0.74 + headOffsetX * 0.26;
-        var y = ((rightEyeOffsetY + leftEyeOffsetY) / 2) * 0.78 + headOffsetY * 0.22;
-        var eyeOpenRatio = ((rightEyeHeight / rightEyeWidth) + (leftEyeHeight / leftEyeWidth)) / 2;
-
-        return { x: x, y: y, eyeOpenRatio: eyeOpenRatio };
-      }
-
-      function setCameraTargetByKey(key) {
-        var positions = {
-          center: { left: '50%', top: '50%' },
-          left: { left: '20%', top: '50%' },
-          right: { left: '80%', top: '50%' },
-          up: { left: '50%', top: '22%' }
-        };
-        var current = positions[key] || positions.center;
-        cameraTarget.style.left = current.left;
-        cameraTarget.style.top = current.top;
-      }
-
-      function beginCalibration() {
-        state.currentCalibrationKey = state.CALIBRATION_SEQUENCE[0];
-        state.calibrationSamples = [];
-        state.calibrationMetrics = {};
-        state.smoothedPoint = null;
-        state.smoothedEyeOpenRatio = null;
-        state.recentTargets = [];
-        setTracking('Calibrando');
-        setCalibration('1 / ' + state.CALIBRATION_SEQUENCE.length + ' · centro');
-        setBlink('Sin calibrar');
-        setStatus('Mira el punto y espera. La calibración es automática.');
-        messageText.textContent = 'Calibrando mirada estimada';
-        cameraHelpText.textContent = 'Sigue el punto: centro, izquierda, derecha y arriba.';
-        setCameraTargetByKey(state.currentCalibrationKey);
-        resetMessageVisual();
-        moveGazeCursor(null);
-      }
-
-      function commitCalibrationSample() {
-        var key = state.currentCalibrationKey;
-        var averaged = state.calibrationSamples.reduce(function (accumulator, sample) {
-          accumulator.x += sample.x;
-          accumulator.y += sample.y;
-          accumulator.eyeOpenRatio += sample.eyeOpenRatio;
-          return accumulator;
-        }, { x: 0, y: 0, eyeOpenRatio: 0 });
-
-        averaged.x /= state.calibrationSamples.length;
-        averaged.y /= state.calibrationSamples.length;
-        averaged.eyeOpenRatio /= state.calibrationSamples.length;
-        state.calibrationMetrics[key] = averaged;
-        state.calibrationSamples = [];
-
-        var currentIndex = state.CALIBRATION_SEQUENCE.indexOf(key);
-        if (currentIndex < state.CALIBRATION_SEQUENCE.length - 1) {
-          state.currentCalibrationKey = state.CALIBRATION_SEQUENCE[currentIndex + 1];
-          setCalibration((currentIndex + 2) + ' / ' + state.CALIBRATION_SEQUENCE.length + ' · ' + state.currentCalibrationKey);
-          setCameraTargetByKey(state.currentCalibrationKey);
-          return false;
-        }
-
-        setTracking('Seguimiento estimado activo');
-        setCalibration('Completa');
-        setBlink('Ojos abiertos');
-        setStatus('Calibración completa. La cámara se oculta. Mira la opción marcada para detener el barrido.');
-        messageText.textContent = 'Mira la opción marcada para seleccionarla';
-        cameraModal.classList.add('hidden');
-        return true;
-      }
-
-      function normalizeAxis(value, centerValue, negativeRef, positiveRef) {
-        var delta = value - centerValue;
-        var negativeDelta = negativeRef - centerValue;
-        var positiveDelta = positiveRef - centerValue;
-
-        if (delta === 0) {
-          return 0;
-        }
-
-        if (Math.sign(delta) === Math.sign(negativeDelta)) {
-          return -Math.min(1, Math.abs(delta / Math.max(Math.abs(negativeDelta), 0.0001)));
-        }
-
-        if (Math.sign(delta) === Math.sign(positiveDelta)) {
-          return Math.min(1, Math.abs(delta / Math.max(Math.abs(positiveDelta), 0.0001)));
-        }
-
-        return delta / Math.max(Math.abs(negativeDelta), Math.abs(positiveDelta), 0.0001);
-      }
-
-      function getProjectedPoint(sample) {
-        var center = state.calibrationMetrics.center;
-        var left = state.calibrationMetrics.left;
-        var right = state.calibrationMetrics.right;
-        var up = state.calibrationMetrics.up;
-        if (!center || !left || !right || !up) {
-          return null;
-        }
-
-        var mirroredDownY = center.y - (up.y - center.y);
-        var surfaceRect = interactionSurface.getBoundingClientRect();
-        var normalizedX = normalizeAxis(sample.x, center.x, left.x, right.x);
-        var normalizedY = normalizeAxis(sample.y, center.y, up.y, mirroredDownY);
-
-        normalizedX = Math.max(-1, Math.min(1, normalizedX));
-        normalizedY = Math.max(-1, Math.min(1, normalizedY));
-
-        return {
-          x: surfaceRect.left + surfaceRect.width / 2 + normalizedX * surfaceRect.width * 0.42,
-          y: surfaceRect.top + surfaceRect.height / 2 + normalizedY * surfaceRect.height * 0.46
-        };
-      }
-
-      function smoothPoint(point) {
-        if (!point) {
-          state.smoothedPoint = null;
-          return null;
-        }
-
-        if (!state.smoothedPoint) {
-          state.smoothedPoint = { x: point.x, y: point.y };
-          return state.smoothedPoint;
-        }
-
-        state.smoothedPoint.x = state.smoothedPoint.x * 0.72 + point.x * 0.28;
-        state.smoothedPoint.y = state.smoothedPoint.y * 0.72 + point.y * 0.28;
-        return state.smoothedPoint;
-      }
-
-      function determineTarget(point) {
-        if (!point) {
-          return null;
-        }
-
-        if (state.selectedIndex !== null) {
-          var confirmRect = confirmZone.getBoundingClientRect();
-          if (point.x >= confirmRect.left && point.x <= confirmRect.right && point.y >= confirmRect.top && point.y <= confirmRect.bottom) {
-            return { kind: 'confirm' };
-          }
-        }
-
-        var scrollerRect = gridScroller.getBoundingClientRect();
-        var bestIndex = null;
-        var bestDistance = Number.POSITIVE_INFINITY;
-
-        actionButtons.forEach(function (button, index) {
-          var rect = button.getBoundingClientRect();
-          if (rect.bottom < scrollerRect.top || rect.top > scrollerRect.bottom) {
-            return;
-          }
-
-          if (point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom) {
-            bestIndex = index;
-            bestDistance = -1;
-            return;
-          }
-
-          var centerX = rect.left + rect.width / 2;
-          var centerY = rect.top + rect.height / 2;
-          var distance = Math.hypot(centerX - point.x, centerY - point.y);
-          if (distance < bestDistance) {
-            bestIndex = index;
-            bestDistance = distance;
-          }
-        });
-
-        if (bestIndex === null) {
-          return null;
-        }
-
-        return { kind: 'button', index: bestIndex };
-      }
-
-      function serializeTarget(target) {
-        if (!target) {
-          return 'none';
-        }
-        if (target.kind === 'confirm') {
-          return 'confirm';
-        }
-        return 'button:' + target.index;
-      }
-
-      function getStableTarget(target) {
-        var serialized = serializeTarget(target);
-        state.recentTargets.push(serialized);
-        if (state.recentTargets.length > state.STABILITY_BUFFER_SIZE) {
-          state.recentTargets.shift();
-        }
-
-        var counts = {};
-        var winner = null;
-        var winnerCount = 0;
-        state.recentTargets.forEach(function (entry) {
-          counts[entry] = (counts[entry] || 0) + 1;
-          if (counts[entry] > winnerCount) {
-            winner = entry;
-            winnerCount = counts[entry];
-          }
-        });
-
-        if (winnerCount < 3 || winner === 'none') {
-          return null;
-        }
-
-        if (winner === 'confirm') {
-          return { kind: 'confirm' };
-        }
-
-        return { kind: 'button', index: Number(winner.split(':')[1]) };
-      }
-
-      function updateSelectionFlow(stableTarget, now) {
-        if (state.selectedIndex === null) {
-          setConfirm('No armada');
-          confirmZone.classList.remove('confirmZone--ready');
-
-          var gazeButtonIndex = stableTarget && stableTarget.kind === 'button' ? stableTarget.index : null;
-          paintButtons(gazeButtonIndex);
-          setZone(gazeButtonIndex === null ? 'Sin detección' : actionButtons[gazeButtonIndex].getAttribute('data-message'));
-
-          if (gazeButtonIndex === state.scanIndex) {
-            if (state.gazeMatchIndex !== gazeButtonIndex) {
-              state.gazeMatchIndex = gazeButtonIndex;
-              state.gazeMatchSince = now;
-            } else if (now - state.gazeMatchSince >= state.MATCH_DWELL_MS) {
-              lockSelection(gazeButtonIndex);
-              paintButtons(gazeButtonIndex);
-            }
-          } else {
-            state.gazeMatchIndex = null;
-            state.gazeMatchSince = 0;
-          }
-          return;
-        }
-
-        paintButtons(state.selectedIndex);
-        setZone(state.selectedWord || 'Sin detección');
-
-        if (stableTarget && stableTarget.kind === 'confirm') {
-          if (!state.confirmZoneReady) {
-            if (!state.confirmZoneSince) {
-              state.confirmZoneSince = now;
-            }
-            if (now - state.confirmZoneSince >= state.CONFIRM_ZONE_DWELL_MS) {
-              state.confirmZoneReady = true;
-              confirmZone.classList.add('confirmZone--ready');
-              setConfirm('Armada');
-              setStatus('Confirmación armada. Haz parpadeo largo manteniendo la mirada arriba.');
-            }
-          }
-          return;
-        }
-
-        state.confirmZoneSince = 0;
-        state.confirmZoneReady = false;
-        confirmZone.classList.remove('confirmZone--ready');
-        setConfirm('No armada');
+        return ((rightEyeHeight / rightEyeWidth) + (leftEyeHeight / leftEyeWidth)) / 2;
       }
 
       function updateBlink(sample, now) {
-        var center = state.calibrationMetrics.center;
-        if (!center) {
+        if (state.baselineEyeOpenRatio === null) {
           setBlink('Sin calibrar');
           return;
         }
 
         if (state.smoothedEyeOpenRatio === null) {
-          state.smoothedEyeOpenRatio = sample.eyeOpenRatio;
+          state.smoothedEyeOpenRatio = sample;
         } else {
-          state.smoothedEyeOpenRatio = state.smoothedEyeOpenRatio * 0.72 + sample.eyeOpenRatio * 0.28;
+          state.smoothedEyeOpenRatio = state.smoothedEyeOpenRatio * 0.72 + sample * 0.28;
         }
 
-        var closedThreshold = Math.max(state.MIN_CLOSED_EYE_RATIO, center.eyeOpenRatio * state.BLINK_THRESHOLD_FACTOR);
+        var closedThreshold = Math.max(state.MIN_CLOSED_EYE_RATIO, state.baselineEyeOpenRatio * state.BLINK_THRESHOLD_FACTOR);
         var closedNow = state.smoothedEyeOpenRatio <= closedThreshold;
 
         if (closedNow) {
@@ -1188,8 +826,10 @@ button {
           if (state.blinkStartTime) {
             var closedDuration = now - state.blinkStartTime;
             setBlink('Cerrados (' + Math.round(closedDuration) + ' ms)');
-            if (state.selectedIndex !== null && state.confirmZoneReady && now >= state.blinkCooldownUntil && closedDuration >= state.LONG_BLINK_MS) {
-              confirmSelectedWord();
+
+            if (now >= state.blinkCooldownUntil && closedDuration >= state.LONG_BLINK_MS) {
+              activateCurrentTarget();
+              state.blinkCooldownUntil = now + 1200;
             }
           }
           return;
@@ -1207,34 +847,13 @@ button {
           }
         }
 
-        if (state.selectedIndex !== null && state.confirmZoneReady) {
-          setBlink('Listo para confirmar');
-          return;
-        }
-
-        setBlink('Ojos abiertos');
+        setBlink(state.waitingConfirm ? 'Esperando confirmación' : 'Ojos abiertos');
       }
 
       function handleNoFace(now) {
-        moveGazeCursor(null);
-        state.recentTargets = [];
-        state.gazeMatchIndex = null;
-        state.gazeMatchSince = 0;
-        state.confirmZoneSince = 0;
-        state.confirmZoneReady = false;
-        confirmZone.classList.remove('confirmZone--ready');
-        setConfirm('No armada');
-        setZone(state.selectedWord || 'Sin detección');
-        setBlink('Sin detección');
-        paintButtons(state.selectedIndex);
-
         if (now - state.lastFaceSeenAt > state.LOST_FACE_RESET_MS) {
           setTracking('Rostro no detectado');
-          if (state.selectedIndex !== null) {
-            setStatus('Rostro no detectado. La palabra seleccionada sigue esperando confirmación.');
-          } else {
-            setStatus('No se detecta rostro. Revisa luz, distancia y posición frente a la cámara.');
-          }
+          setStatus(state.waitingConfirm ? 'Rostro no detectado. La palabra sigue pendiente de confirmar.' : 'No se detecta rostro. Revisa luz, distancia y posición frente a la cámara.');
         }
       }
 
@@ -1249,10 +868,7 @@ button {
         var FilesetResolver = vision.FilesetResolver;
         var FaceLandmarker = vision.FaceLandmarker;
 
-        var visionFileset = await FilesetResolver.forVisionTasks(
-          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
-        );
-
+        var visionFileset = await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm');
         state.faceLandmarker = await FaceLandmarker.createFromOptions(visionFileset, {
           baseOptions: {
             modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task'
@@ -1279,7 +895,6 @@ button {
 
         try {
           await ensureFaceLandmarker();
-
           state.mediaStream = await navigator.mediaDevices.getUserMedia({
             audio: false,
             video: {
@@ -1291,7 +906,10 @@ button {
 
           cameraVideo.srcObject = state.mediaStream;
           await cameraVideo.play();
-          beginCalibration();
+          setTracking('Calibrando parpadeo');
+          setCalibration('Recolectando ojos abiertos');
+          setStatus('Mantén los ojos abiertos unos segundos.');
+          cameraHelpText.textContent = 'No cierres los ojos durante la calibración.';
           state.processing = true;
           state.lastVideoTime = -1;
           state.lastFaceSeenAt = performance.now();
@@ -1332,28 +950,42 @@ button {
         }
 
         state.lastFaceSeenAt = now;
-        var sample = getMetricSample(landmarks);
+        var eyeSample = getEyeSample(landmarks);
 
-        if (!state.calibrationMetrics.up) {
-          state.calibrationSamples.push(sample);
-          setCalibration((state.CALIBRATION_SEQUENCE.indexOf(state.currentCalibrationKey) + 1) + ' / ' + state.CALIBRATION_SEQUENCE.length + ' · ' + state.currentCalibrationKey + ' (' + state.calibrationSamples.length + '/' + state.CALIBRATION_SAMPLES_PER_STEP + ')');
-          if (state.calibrationSamples.length >= state.CALIBRATION_SAMPLES_PER_STEP) {
-            commitCalibrationSample();
+        if (state.baselineEyeOpenRatio === null) {
+          state.calibrationSamples.push(eyeSample);
+          setCalibration(state.calibrationSamples.length + ' / ' + state.CALIBRATION_SAMPLES_REQUIRED);
+          if (state.calibrationSamples.length >= state.CALIBRATION_SAMPLES_REQUIRED) {
+            var total = state.calibrationSamples.reduce(function (sum, value) { return sum + value; }, 0);
+            state.baselineEyeOpenRatio = total / state.calibrationSamples.length;
+            state.calibrationSamples = [];
+            state.smoothedEyeOpenRatio = state.baselineEyeOpenRatio;
+            setTracking('Parpadeo calibrado');
+            setCalibration('Completa');
+            setStatus('Calibración completa. El barrido ya está activo.');
+            setBlink('Ojos abiertos');
+            messageText.textContent = 'Espera el barrido';
+            cameraModal.classList.add('hidden');
           }
           window.requestAnimationFrame(processVideoFrame);
           return;
         }
 
-        setTracking('Seguimiento estimado activo');
-        var projectedPoint = getProjectedPoint(sample);
-        var smoothedPoint = smoothPoint(projectedPoint);
-        moveGazeCursor(smoothedPoint);
-        var target = determineTarget(smoothedPoint);
-        var stableTarget = getStableTarget(target);
-        updateSelectionFlow(stableTarget, now);
-        updateBlink(sample, now);
-
+        setTracking('Detección de parpadeo activa');
+        updateBlink(eyeSample, now);
         window.requestAnimationFrame(processVideoFrame);
+      }
+
+      function showMainScreen() {
+        splashScreen.classList.add('hidden');
+        mainScreen.classList.remove('hidden');
+        window.scrollTo(0, 0);
+        buildScanSequence();
+        paintScanTarget();
+        setScan('Activo, recorriendo opciones lentamente');
+        state.scanTimer = window.setInterval(nextScanPosition, state.SCAN_INTERVAL_MS);
+        updateScrollButtons();
+        autoStartCamera();
       }
 
       scrollUpButton.addEventListener('click', function () {
@@ -1369,13 +1001,15 @@ button {
 
       actionButtons.forEach(function (button, index) {
         button.addEventListener('click', function () {
-          state.selectedIndex = index;
-          state.selectedWord = button.getAttribute('data-message') || '';
-          setCandidateWord(state.selectedWord);
-          setStatus('Selección manual. Mira arriba y luego haz parpadeo largo para confirmar.');
-          setScan('Detenido en palabra');
-          setConfirm('Mira arriba para armar');
-          paintButtons(index);
+          state.pendingWord = button.getAttribute('data-message') || '';
+          state.waitingConfirm = true;
+          confirmZone.classList.add('confirmZone--ready');
+          setCandidateWord(state.pendingWord);
+          setStatus('Selección manual. Haz otro parpadeo largo para confirmar.');
+          setConfirm('Lista para confirmar');
+          setScan('Detenido esperando confirmación');
+          state.scanPosition = state.scanSequence.indexOf('button:' + index);
+          paintScanTarget();
         });
       });
 
