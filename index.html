@@ -12,7 +12,6 @@
       --shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
       --scan: rgba(53, 255, 195, 0.95);
       --candidate: rgba(255, 216, 58, 0.98);
-      --confirm: rgba(255, 255, 255, 0.96);
     }* {
   box-sizing: border-box;
 }
@@ -153,6 +152,31 @@ button {
 .p4 { top: 40px; right: -10px; }
 .p5 { top: 60px; left: 20px; }
 
+.toastLayer {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 80;
+  padding: 24px;
+}
+
+.toastBox {
+  max-width: min(86vw, 560px);
+  background: rgba(8, 18, 30, 0.94);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.32);
+  padding: 18px 22px;
+  text-align: center;
+  font-size: clamp(1.1rem, 4.8vw, 1.6rem);
+  line-height: 1.25;
+  font-weight: 700;
+}
+
 .main {
   display: flex;
   justify-content: center;
@@ -165,43 +189,16 @@ button {
   width: min(100%, 940px);
   min-height: calc(100vh - 36px);
   display: grid;
-  grid-template-rows: auto auto auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto;
   gap: 16px;
 }
 
-.status,
-.trackingPanel,
 .confirmZone,
 .message {
   border-radius: 22px;
   box-shadow: var(--shadow);
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: linear-gradient(180deg, rgba(16, 30, 46, 0.96) 0%, rgba(10, 20, 32, 0.98) 100%);
-}
-
-.status {
-  padding: 16px 18px;
-  color: var(--text-soft);
-  text-align: center;
-  font-size: clamp(1rem, 2.7vw, 1.2rem);
-}
-
-.trackingPanel {
-  display: grid;
-  gap: 10px;
-  padding: 16px;
-}
-
-.trackingRow {
-  display: grid;
-  gap: 8px;
-  color: var(--text-soft);
-  font-size: 1rem;
-}
-
-.trackingRow strong {
-  color: var(--text);
-  font-weight: 700;
 }
 
 .confirmZone {
@@ -325,6 +322,7 @@ button {
 .action--pain { background: linear-gradient(180deg, #7d4c00 0%, #4f2f00 100%); }
 .action--bathroom { background: linear-gradient(180deg, #4550a6 0%, #2a316a 100%); }
 .action--help { background: linear-gradient(180deg, #7a5d00 0%, #4b3900 100%); }
+.action--back { background: linear-gradient(180deg, #3f4a57 0%, #29313b 100%); }
 
 .action--scan {
   border-color: var(--scan);
@@ -507,21 +505,13 @@ button {
   </div>
 </section>
 
-<div id="toastMessage" class="hidden" aria-live="polite" aria-atomic="true" style="position:fixed; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:80; padding:24px;"><div id="toastMessageBox" style="max-width:min(86vw,560px); background:rgba(8,18,30,0.94); color:#fff; border:1px solid rgba(255,255,255,0.14); border-radius:22px; box-shadow:0 12px 36px rgba(0,0,0,0.32); padding:18px 22px; text-align:center; font-size:clamp(1.1rem,4.8vw,1.6rem); line-height:1.25; font-weight:700;">Mensaje</div></div>
+<div id="toastLayer" class="toastLayer hidden" aria-live="polite" aria-atomic="true">
+  <div id="toastBox" class="toastBox">Mensaje</div>
+</div>
 
 <main id="mainScreen" class="screen main hidden" aria-label="Pantalla principal experimental">
   <div class="layout">
-    <div id="statusText" class="status hidden">Modo estable activo. El cursor se eliminó. El barrido recorre flecha arriba, flecha abajo y botones. Parpadeo largo activa el elemento marcado; un segundo parpadeo largo confirma la palabra.</div>
-
-    <section class="trackingPanel hidden" aria-label="Estado experimental">
-      <div class="trackingRow"><div><strong>Estado:</strong> <span id="trackingState">Esperando inicio</span></div></div>
-      <div class="trackingRow"><div><strong>Calibración:</strong> <span id="calibrationState">Pendiente</span></div></div>
-      <div class="trackingRow"><div><strong>Barrido:</strong> <span id="scanState">Aún no iniciado</span></div></div>
-      <div class="trackingRow"><div><strong>Confirmación:</strong> <span id="confirmState">No armada</span></div></div>
-      <div class="trackingRow"><div><strong>Ojos:</strong> <span id="blinkState">Sin calibrar</span></div></div>
-    </section>
-
-    <div id="confirmZone" class="confirmZone">Tras elegir una palabra, un segundo parpadeo largo la confirma. Doble parpadeo corto la borra.</div>
+    <div id="confirmZone" class="confirmZone">Parpadeo largo activa el elemento marcado. Si una palabra queda escrita, otro parpadeo largo la confirma. Doble parpadeo corto la borra.</div>
 
     <section id="messagePanel" class="message" aria-live="polite" aria-atomic="true">
       <h1 id="messageText" class="message__text">Iniciando cámara y calibración</h1>
@@ -532,24 +522,17 @@ button {
       <button id="scrollDownButton" type="button" class="scrollButton scrollButton--down" aria-label="Bajar">↓</button>
 
       <div id="gridScroller" class="gridScroller">
-        <div id="actionsGrid" class="grid">
-          <button type="button" class="action action--yes" data-message="Sí">Sí</button>
-          <button type="button" class="action action--no" data-message="No">No</button>
-          <button type="button" class="action action--water" data-message="Agua">Agua</button>
-          <button type="button" class="action action--pain" data-message="Dolor">Dolor</button>
-          <button type="button" class="action action--bathroom" data-message="Baño">Baño</button>
-          <button type="button" class="action action--help" data-message="Ayuda">Ayuda</button>
-        </div>
+        <div id="actionsGrid" class="grid"></div>
       </div>
     </section>
 
-    <div class="footer">Barrido integrado con flechas arriba y abajo, parpadeo largo estable y doble parpadeo corto para borrar</div>
+    <div class="footer">Barrido integrado con flechas arriba y abajo, parpadeo estable, Wake Lock y submenú de dolor</div>
   </div>
 </main>
 
 <div id="cameraModal" class="cameraModal hidden" aria-label="Calibración de cámara">
   <div class="cameraCard">
-    <p class="cameraCard__title">Mantén los ojos abiertos para calibrar el parpadeo</p>
+    <p class="cameraCard__title">Mantén los ojos abiertos y el rostro centrado</p>
     <div class="cameraWrap">
       <video id="cameraVideo" class="cameraVideo" autoplay muted playsinline></video>
     </div>
@@ -561,25 +544,41 @@ button {
     (function () {
       var splashScreen = document.getElementById('splashScreen');
       var mainScreen = document.getElementById('mainScreen');
-      var statusText = document.getElementById('statusText');
-      var toastMessage = document.getElementById('toastMessage');
-      var toastMessageBox = document.getElementById('toastMessageBox');
-      var toastTimer = null;
-      var trackingState = document.getElementById('trackingState');
-      var calibrationState = document.getElementById('calibrationState');
-      var scanState = document.getElementById('scanState');
-      var confirmState = document.getElementById('confirmState');
-      var blinkState = document.getElementById('blinkState');
       var confirmZone = document.getElementById('confirmZone');
       var messagePanel = document.getElementById('messagePanel');
       var messageText = document.getElementById('messageText');
       var scrollUpButton = document.getElementById('scrollUpButton');
       var scrollDownButton = document.getElementById('scrollDownButton');
       var gridScroller = document.getElementById('gridScroller');
+      var actionsGrid = document.getElementById('actionsGrid');
       var cameraModal = document.getElementById('cameraModal');
       var cameraHelpText = document.getElementById('cameraHelpText');
       var cameraVideo = document.getElementById('cameraVideo');
-      var actionButtons = Array.prototype.slice.call(document.querySelectorAll('.action'));
+      var toastLayer = document.getElementById('toastLayer');
+      var toastBox = document.getElementById('toastBox');
+
+      var toastTimer = null;
+      var wakeLockSentinel = null;
+
+      var menuConfig = {
+        main: [
+          { key: 'yes', label: 'Sí', kind: 'speak', phrase: 'Sí', className: 'action--yes' },
+          { key: 'no', label: 'No', kind: 'speak', phrase: 'No', className: 'action--no' },
+          { key: 'water', label: 'Agua', kind: 'speak', phrase: 'Agua', className: 'action--water' },
+          { key: 'pain', label: 'Dolor', kind: 'submenu', submenu: 'pain', className: 'action--pain' },
+          { key: 'bathroom', label: 'Baño', kind: 'speak', phrase: 'Baño', className: 'action--bathroom' },
+          { key: 'help', label: 'Ayuda', kind: 'speak', phrase: 'Ayuda', className: 'action--help' }
+        ],
+        pain: [
+          { key: 'pain-head', label: 'Cabeza', kind: 'speak', phrase: 'Dolor de cabeza', className: 'action--pain' },
+          { key: 'pain-back', label: 'Espalda', kind: 'speak', phrase: 'Dolor de espalda', className: 'action--pain' },
+          { key: 'pain-body', label: 'Cuerpo', kind: 'speak', phrase: 'Dolor de cuerpo', className: 'action--pain' },
+          { key: 'pain-chest', label: 'Pecho', kind: 'speak', phrase: 'Dolor de pecho', className: 'action--pain' },
+          { key: 'pain-legs', label: 'Piernas', kind: 'speak', phrase: 'Dolor de piernas', className: 'action--pain' },
+          { key: 'pain-arms', label: 'Brazos', kind: 'speak', phrase: 'Dolor de brazos', className: 'action--pain' },
+          { key: 'pain-back-main', label: 'Volver', kind: 'back', backTo: 'main', className: 'action--back' }
+        ]
+      };
 
       var state = {
         SPLASH_DURATION_MS: 4000,
@@ -590,10 +589,8 @@ button {
         DOUBLE_BLINK_GAP_MS: 700,
         BLINK_THRESHOLD_FACTOR: 0.63,
         MIN_CLOSED_EYE_RATIO: 0.10,
-        CALIBRATION_SAMPLES_REQUIRED: 24,
+        CALIBRATION_SAMPLES_REQUIRED: 36,
         LOST_FACE_RESET_MS: 1200,
-        IRIS_RIGHT: [469, 470, 471, 472],
-        IRIS_LEFT: [474, 475, 476, 477],
         RIGHT_EYE_OUTER: 33,
         RIGHT_EYE_INNER: 133,
         LEFT_EYE_OUTER: 263,
@@ -602,6 +599,10 @@ button {
         RIGHT_EYE_BOTTOM: 145,
         LEFT_EYE_TOP: 386,
         LEFT_EYE_BOTTOM: 374,
+        FACE_LEFT: 234,
+        FACE_RIGHT: 454,
+        FACE_TOP: 10,
+        FACE_BOTTOM: 152,
         hasSpeechSupport: 'speechSynthesis' in window,
         faceLandmarker: null,
         mediaStream: null,
@@ -610,7 +611,10 @@ button {
         scanTimer: null,
         scanSequence: [],
         scanPosition: 0,
-        pendingWord: '',
+        currentMenu: 'main',
+        currentItems: [],
+        actionButtons: [],
+        pendingAction: null,
         waitingConfirm: false,
         blinkStartTime: 0,
         closedFrameCount: 0,
@@ -629,73 +633,36 @@ button {
           return;
         }
 
-        toastMessageBox.textContent = message;
-        toastMessage.classList.remove('hidden');
-
+        toastBox.textContent = message;
+        toastLayer.classList.remove('hidden');
         if (toastTimer) {
           window.clearTimeout(toastTimer);
         }
-
         toastTimer = window.setTimeout(function () {
-          toastMessage.classList.add('hidden');
+          toastLayer.classList.add('hidden');
         }, durationMs || 2200);
       }
 
-      function setStatus(message) {
-        statusText.textContent = message;
-        showToast(message, 2200);
-      }
-
-      function setTracking(message) {
-        trackingState.textContent = message;
-      }
-
-      function setCalibration(message) {
-        calibrationState.textContent = message;
-      }
-
-      function setScan(message) {
-        scanState.textContent = message;
-      }
-
-      function setConfirm(message) {
-        confirmState.textContent = message;
-      }
-
-      function setBlink(message) {
-        blinkState.textContent = message;
-      }
-
-      function resetMessageVisual() {
+      function setMessageNeutral(text) {
+        messageText.textContent = text;
         messagePanel.classList.remove('message--candidate');
         messagePanel.classList.remove('message--confirm');
-        confirmZone.classList.remove('confirmZone--ready');
       }
 
-      function setCandidateWord(text) {
+      function setCandidateMessage(text) {
         messageText.textContent = text;
         messagePanel.classList.add('message--candidate');
         messagePanel.classList.remove('message--confirm');
       }
 
-      function setConfirmedWord(text) {
+      function setConfirmedMessage(text) {
         messageText.textContent = text;
         messagePanel.classList.remove('message--candidate');
         messagePanel.classList.add('message--confirm');
       }
 
-      function clearPendingSelection() {
-        state.pendingWord = '';
-        state.waitingConfirm = false;
-        state.lastShortBlinkAt = 0;
-        state.shortBlinkCount = 0;
-        confirmZone.classList.remove('confirmZone--ready');
-        setConfirm('No armada');
-        setScan('Activo, recorriendo opciones lentamente');
-        setStatus('Selección cancelada. El barrido continúa.');
-        messageText.textContent = 'Espera el barrido';
-        resetMessageVisual();
-        paintScanTarget();
+      function setConfirmZoneReady(isReady) {
+        confirmZone.classList.toggle('confirmZone--ready', isReady);
       }
 
       function chooseSpanishVoice() {
@@ -729,6 +696,26 @@ button {
         window.speechSynthesis.speak(utterance);
       }
 
+      async function requestWakeLock() {
+        try {
+          if (!('wakeLock' in navigator)) {
+            return;
+          }
+          wakeLockSentinel = await navigator.wakeLock.request('screen');
+          wakeLockSentinel.addEventListener('release', function () {
+            wakeLockSentinel = null;
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') {
+          requestWakeLock();
+        }
+      });
+
       function updateScrollButtons() {
         var maxScroll = gridScroller.scrollHeight - gridScroller.clientHeight;
         scrollUpButton.disabled = gridScroller.scrollTop <= 4;
@@ -737,9 +724,10 @@ button {
 
       function buildScanSequence() {
         state.scanSequence = ['up', 'down'];
-        actionButtons.forEach(function (_, index) {
+        state.currentItems.forEach(function (_, index) {
           state.scanSequence.push('button:' + index);
         });
+        state.scanPosition = 0;
       }
 
       function getCurrentScanTarget() {
@@ -752,11 +740,11 @@ button {
         scrollUpButton.classList.toggle('scrollButton--active', !state.waitingConfirm && current === 'up');
         scrollDownButton.classList.toggle('scrollButton--active', !state.waitingConfirm && current === 'down');
 
-        actionButtons.forEach(function (button, index) {
-          var currentButton = current === 'button:' + index;
-          var pendingButton = state.waitingConfirm && state.pendingWord === button.getAttribute('data-message');
-          button.classList.toggle('action--scan', !state.waitingConfirm && currentButton);
-          button.classList.toggle('action--candidate', pendingButton);
+        state.actionButtons.forEach(function (button, index) {
+          var isCurrent = !state.waitingConfirm && current === 'button:' + index;
+          var isPending = state.waitingConfirm && state.pendingAction && state.pendingAction.label === button.getAttribute('data-label');
+          button.classList.toggle('action--scan', isCurrent);
+          button.classList.toggle('action--candidate', isPending);
         });
       }
 
@@ -768,67 +756,118 @@ button {
         paintScanTarget();
       }
 
+      function renderMenu(menuName) {
+        state.currentMenu = menuName;
+        state.currentItems = menuConfig[menuName].slice();
+        actionsGrid.innerHTML = '';
+
+        state.currentItems.forEach(function (item, index) {
+          var button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'action ' + item.className;
+          button.textContent = item.label;
+          button.setAttribute('data-label', item.label);
+          button.addEventListener('click', function () {
+            preparePendingAction(index);
+          });
+          actionsGrid.appendChild(button);
+        });
+
+        state.actionButtons = Array.prototype.slice.call(actionsGrid.querySelectorAll('.action'));
+        buildScanSequence();
+        paintScanTarget();
+        updateScrollButtons();
+
+        if (menuName === 'pain') {
+          setMessageNeutral('Selecciona tipo de dolor');
+          showToast('Detalle de dolor', 1800);
+        } else {
+          setMessageNeutral('Espera el barrido');
+        }
+      }
+
+      function preparePendingAction(index) {
+        var item = state.currentItems[index];
+        if (!item) {
+          return;
+        }
+
+        state.pendingAction = item;
+        state.waitingConfirm = true;
+        state.lastShortBlinkAt = 0;
+        state.shortBlinkCount = 0;
+        setConfirmZoneReady(true);
+        setCandidateMessage(item.kind === 'speak' ? item.phrase : item.label);
+        showToast('Parpadeo largo confirma. Doble parpadeo corto borra.', 2200);
+        paintScanTarget();
+      }
+
+      function clearPendingSelection() {
+        state.pendingAction = null;
+        state.waitingConfirm = false;
+        state.lastShortBlinkAt = 0;
+        state.shortBlinkCount = 0;
+        setConfirmZoneReady(false);
+        setMessageNeutral(state.currentMenu === 'pain' ? 'Selecciona tipo de dolor' : 'Espera el barrido');
+        showToast('Selección borrada', 1800);
+        paintScanTarget();
+      }
+
+      function executePendingAction() {
+        if (!state.pendingAction) {
+          return;
+        }
+
+        var action = state.pendingAction;
+        state.pendingAction = null;
+        state.waitingConfirm = false;
+        state.lastShortBlinkAt = 0;
+        state.shortBlinkCount = 0;
+        setConfirmZoneReady(false);
+
+        if (action.kind === 'submenu') {
+          renderMenu(action.submenu);
+          return;
+        }
+
+        if (action.kind === 'back') {
+          renderMenu(action.backTo || 'main');
+          showToast('Volviendo', 1600);
+          return;
+        }
+
+        setConfirmedMessage(action.phrase);
+        speakMessage(action.phrase);
+        showToast('Palabra confirmada', 1600);
+        paintScanTarget();
+      }
+
       function activateCurrentTarget() {
         var current = getCurrentScanTarget();
 
         if (!state.waitingConfirm && current === 'up') {
           gridScroller.scrollBy({ top: -220, left: 0, behavior: 'smooth' });
-          setStatus('Subiendo');
+          showToast('Subiendo', 1200);
           return;
         }
 
         if (!state.waitingConfirm && current === 'down') {
           gridScroller.scrollBy({ top: 220, left: 0, behavior: 'smooth' });
-          setStatus('Bajando');
+          showToast('Bajando', 1200);
           return;
         }
 
         if (!state.waitingConfirm && current.indexOf('button:') === 0) {
-          var index = Number(current.split(':')[1]);
-          state.pendingWord = actionButtons[index].getAttribute('data-message') || '';
-          state.waitingConfirm = true;
-          state.lastShortBlinkAt = 0;
-          state.shortBlinkCount = 0;
-          confirmZone.classList.add('confirmZone--ready');
-          setCandidateWord(state.pendingWord);
-          setConfirm('Lista para confirmar');
-          setScan('Detenido esperando confirmación');
-          setStatus('Palabra escrita. Parpadeo largo confirma. Doble parpadeo corto la borra.');
-          paintScanTarget();
+          preparePendingAction(Number(current.split(':')[1]));
           return;
         }
 
-        if (state.waitingConfirm && state.pendingWord) {
-          setConfirmedWord(state.pendingWord);
-          speakMessage(state.pendingWord);
-          state.pendingWord = '';
-          state.waitingConfirm = false;
-          state.lastShortBlinkAt = 0;
-          state.shortBlinkCount = 0;
-          confirmZone.classList.remove('confirmZone--ready');
-          setConfirm('No armada');
-          setScan('Activo, recorriendo opciones lentamente');
-          setStatus('Palabra confirmada');
-          setBlink('Confirmado');
-          paintScanTarget();
+        if (state.waitingConfirm) {
+          executePendingAction();
         }
       }
 
-      function averagePoints(landmarks, indices) {
-        var total = indices.reduce(function (accumulator, index) {
-          var point = landmarks[index];
-          accumulator.x += point.x;
-          accumulator.y += point.y;
-          return accumulator;
-        }, { x: 0, y: 0 });
-
-        return {
-          x: total.x / indices.length,
-          y: total.y / indices.length
-        };
-      }
-
-      function getEyeSample(landmarks) {
+      function averageEyeRatio(landmarks) {
         var rightOuter = landmarks[state.RIGHT_EYE_OUTER];
         var rightInner = landmarks[state.RIGHT_EYE_INNER];
         var leftOuter = landmarks[state.LEFT_EYE_OUTER];
@@ -846,16 +885,54 @@ button {
         return ((rightEyeHeight / rightEyeWidth) + (leftEyeHeight / leftEyeWidth)) / 2;
       }
 
-      function updateBlink(sample, now) {
+      function faceQuality(landmarks) {
+        var left = landmarks[state.FACE_LEFT];
+        var right = landmarks[state.FACE_RIGHT];
+        var top = landmarks[state.FACE_TOP];
+        var bottom = landmarks[state.FACE_BOTTOM];
+
+        var faceWidth = Math.abs(right.x - left.x);
+        var faceHeight = Math.abs(bottom.y - top.y);
+        var centerX = (left.x + right.x) / 2;
+        var centerY = (top.y + bottom.y) / 2;
+
+        if (faceWidth < 0.18 || faceHeight < 0.20) {
+          return { ok: false, message: 'Acércate un poco' };
+        }
+
+        if (faceWidth > 0.62 || faceHeight > 0.72) {
+          return { ok: false, message: 'Aléjate un poco' };
+        }
+
+        if (centerX < 0.34 || centerX > 0.66 || centerY < 0.28 || centerY > 0.72) {
+          return { ok: false, message: 'Centra el rostro' };
+        }
+
+        return { ok: true, message: 'Rostro correcto' };
+      }
+
+      function finishCalibration() {
+        var sorted = state.calibrationSamples.slice().sort(function (a, b) { return a - b; });
+        var trimCount = Math.floor(sorted.length * 0.2);
+        var usable = sorted.slice(trimCount, sorted.length - trimCount);
+        var total = usable.reduce(function (sum, value) { return sum + value; }, 0);
+        state.baselineEyeOpenRatio = total / usable.length;
+        state.calibrationSamples = [];
+        state.smoothedEyeOpenRatio = state.baselineEyeOpenRatio;
+        cameraModal.classList.add('hidden');
+        showToast('Calibración completa', 1800);
+        setMessageNeutral('Espera el barrido');
+      }
+
+      function updateBlink(eyeRatio, now) {
         if (state.baselineEyeOpenRatio === null) {
-          setBlink('Sin calibrar');
           return;
         }
 
         if (state.smoothedEyeOpenRatio === null) {
-          state.smoothedEyeOpenRatio = sample;
+          state.smoothedEyeOpenRatio = eyeRatio;
         } else {
-          state.smoothedEyeOpenRatio = state.smoothedEyeOpenRatio * 0.72 + sample * 0.28;
+          state.smoothedEyeOpenRatio = state.smoothedEyeOpenRatio * 0.72 + eyeRatio * 0.28;
         }
 
         if (state.shortBlinkCount > 0 && now - state.lastShortBlinkAt > state.DOUBLE_BLINK_GAP_MS) {
@@ -869,15 +946,12 @@ button {
         if (closedNow) {
           state.closedFrameCount += 1;
           state.openFrameCount = 0;
-
           if (state.closedFrameCount >= 2 && !state.blinkStartTime) {
             state.blinkStartTime = now;
           }
 
           if (state.blinkStartTime) {
             var closedDuration = now - state.blinkStartTime;
-            setBlink('Cerrados (' + Math.round(closedDuration) + ' ms)');
-
             if (now >= state.blinkCooldownUntil && closedDuration >= state.LONG_BLINK_MS) {
               activateCurrentTarget();
               state.blinkCooldownUntil = now + 1200;
@@ -900,7 +974,7 @@ button {
               if (state.shortBlinkCount === 0 || now - state.lastShortBlinkAt > state.DOUBLE_BLINK_GAP_MS) {
                 state.shortBlinkCount = 1;
                 state.lastShortBlinkAt = now;
-                setBlink('Parpadeo 1/2 para borrar');
+                showToast('Parpadeo 1 de 2 para borrar', 1200);
                 return;
               }
 
@@ -908,24 +982,17 @@ button {
               state.lastShortBlinkAt = now;
               if (state.shortBlinkCount >= 2) {
                 clearPendingSelection();
-                setBlink('Palabra borrada');
                 state.blinkCooldownUntil = now + 700;
                 return;
               }
             }
-
-            setBlink('Parpadeo corto');
-            return;
           }
         }
-
-        setBlink(state.waitingConfirm ? (state.shortBlinkCount === 1 ? 'Esperando 2/2 para borrar' : 'Esperando confirmación') : 'Ojos abiertos');
       }
 
       function handleNoFace(now) {
         if (now - state.lastFaceSeenAt > state.LOST_FACE_RESET_MS) {
-          setTracking('Rostro no detectado');
-          setStatus(state.waitingConfirm ? 'Rostro no detectado. La palabra sigue pendiente de confirmar.' : 'No se detecta rostro. Revisa luz, distancia y posición frente a la cámara.');
+          cameraHelpText.textContent = state.baselineEyeOpenRatio === null ? 'No se detecta rostro. Colócate frente a la cámara.' : 'Rostro perdido. Ajusta posición y luz.';
         }
       }
 
@@ -934,7 +1001,6 @@ button {
           return state.faceLandmarker;
         }
 
-        setTracking('Cargando detector facial');
         var module = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest');
         var vision = module.default || module;
         var FilesetResolver = vision.FilesetResolver;
@@ -957,13 +1023,12 @@ button {
 
       async function autoStartCamera() {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          setTracking('Cámara no disponible');
-          setStatus('Este navegador no permite acceso a cámara frontal.');
+          showToast('Cámara no disponible', 2200);
           return;
         }
 
         cameraModal.classList.remove('hidden');
-        setStatus('Solicitando permiso de cámara frontal...');
+        showToast('Solicitando cámara', 1400);
 
         try {
           await ensureFaceLandmarker();
@@ -978,19 +1043,15 @@ button {
 
           cameraVideo.srcObject = state.mediaStream;
           await cameraVideo.play();
-          setTracking('Calibrando parpadeo');
-          setCalibration('Recolectando ojos abiertos');
-          setStatus('Mantén los ojos abiertos unos segundos.');
-          cameraHelpText.textContent = 'No cierres los ojos durante la calibración.';
+          cameraHelpText.textContent = 'Mantén los ojos abiertos y el rostro centrado.';
           state.processing = true;
           state.lastVideoTime = -1;
           state.lastFaceSeenAt = performance.now();
           processVideoFrame();
         } catch (error) {
           console.error(error);
-          setTracking('Error de cámara');
-          setStatus('No se pudo iniciar cámara frontal. Revisa permiso de cámara y carga segura HTTPS o localhost.');
           cameraModal.classList.add('hidden');
+          showToast('No se pudo iniciar la cámara', 2200);
         }
       }
 
@@ -1000,7 +1061,6 @@ button {
         }
 
         var now = performance.now();
-
         if (cameraVideo.readyState < 2) {
           window.requestAnimationFrame(processVideoFrame);
           return;
@@ -1022,68 +1082,47 @@ button {
         }
 
         state.lastFaceSeenAt = now;
-        var eyeSample = getEyeSample(landmarks);
+        var quality = faceQuality(landmarks);
+        var eyeRatio = averageEyeRatio(landmarks);
 
         if (state.baselineEyeOpenRatio === null) {
-          state.calibrationSamples.push(eyeSample);
-          setCalibration(state.calibrationSamples.length + ' / ' + state.CALIBRATION_SAMPLES_REQUIRED);
-          if (state.calibrationSamples.length >= state.CALIBRATION_SAMPLES_REQUIRED) {
-            var total = state.calibrationSamples.reduce(function (sum, value) { return sum + value; }, 0);
-            state.baselineEyeOpenRatio = total / state.calibrationSamples.length;
-            state.calibrationSamples = [];
-            state.smoothedEyeOpenRatio = state.baselineEyeOpenRatio;
-            setTracking('Parpadeo calibrado');
-            setCalibration('Completa');
-            setStatus('Calibración completa. El barrido ya está activo. Parpadeo largo activa o confirma; doble parpadeo corto borra la palabra pendiente.');
-            setBlink('Ojos abiertos');
-            messageText.textContent = 'Espera el barrido';
-            cameraModal.classList.add('hidden');
+          cameraHelpText.textContent = quality.message;
+          if (quality.ok && eyeRatio > state.MIN_CLOSED_EYE_RATIO) {
+            state.calibrationSamples.push(eyeRatio);
+            if (state.calibrationSamples.length >= state.CALIBRATION_SAMPLES_REQUIRED) {
+              finishCalibration();
+            }
           }
           window.requestAnimationFrame(processVideoFrame);
           return;
         }
 
-        setTracking('Detección de parpadeo activa');
-        updateBlink(eyeSample, now);
+        updateBlink(eyeRatio, now);
         window.requestAnimationFrame(processVideoFrame);
       }
 
       function showMainScreen() {
         splashScreen.classList.add('hidden');
         mainScreen.classList.remove('hidden');
-        window.scrollTo(0, 0);
-        buildScanSequence();
-        paintScanTarget();
-        setScan('Activo, recorriendo opciones lentamente');
+        renderMenu('main');
         state.scanTimer = window.setInterval(nextScanPosition, state.SCAN_INTERVAL_MS);
         updateScrollButtons();
+        requestWakeLock();
         autoStartCamera();
       }
 
       scrollUpButton.addEventListener('click', function () {
         gridScroller.scrollBy({ top: -220, left: 0, behavior: 'smooth' });
+        showToast('Subiendo', 1200);
       });
 
       scrollDownButton.addEventListener('click', function () {
         gridScroller.scrollBy({ top: 220, left: 0, behavior: 'smooth' });
+        showToast('Bajando', 1200);
       });
 
       gridScroller.addEventListener('scroll', updateScrollButtons);
       window.addEventListener('resize', updateScrollButtons);
-
-      actionButtons.forEach(function (button, index) {
-        button.addEventListener('click', function () {
-          state.pendingWord = button.getAttribute('data-message') || '';
-          state.waitingConfirm = true;
-          confirmZone.classList.add('confirmZone--ready');
-          setCandidateWord(state.pendingWord);
-          setStatus('Selección manual. Haz otro parpadeo largo para confirmar.');
-          setConfirm('Lista para confirmar');
-          setScan('Detenido esperando confirmación');
-          state.scanPosition = state.scanSequence.indexOf('button:' + index);
-          paintScanTarget();
-        });
-      });
 
       window.setTimeout(showMainScreen, state.SPLASH_DURATION_MS);
     })();
