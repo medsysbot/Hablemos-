@@ -570,7 +570,9 @@ button { font: inherit; }
         LONG_BLINK_MS: 720,
         BLINK_THRESHOLD_FACTOR: 0.58,
         MIN_CLOSED_EYE_RATIO: 0.10,
-        CALIBRATION_SAMPLES_REQUIRED: 28,
+        CALIBRATION_SAMPLES_REQUIRED: 40,
+        CALIBRATION_STABLE_FRAMES_REQUIRED: 12,
+        CALIBRATION_MAX_STEP_RATIO: 0.22,
         LOST_FACE_RESET_MS: 1200,
         RIGHT_EYE_OUTER: 33,
         RIGHT_EYE_INNER: 133,
@@ -602,6 +604,8 @@ button { font: inherit; }
         openFrameCount: 0,
         blinkCooldownUntil: 0,
         calibrationSamples: [],
+        calibrationStableFrames: 0,
+        calibrationLastAcceptedRatio: null,
         baselineEyeOpenRatio: null,
         smoothedEyeOpenRatio: null,
         lastFaceSeenAt: 0
@@ -906,10 +910,50 @@ button { font: inherit; }
         var total = usable.reduce(function (sum, value) { return sum + value; }, 0);
         state.baselineEyeOpenRatio = total / usable.length;
         state.calibrationSamples = [];
+        state.calibrationStableFrames = 0;
+        state.calibrationLastAcceptedRatio = null;
         state.smoothedEyeOpenRatio = state.baselineEyeOpenRatio;
         cameraModal.classList.add('hidden');
         showToast('Calibración completa', 1700);
         setMessageNeutral('Espera el barrido');
+      }
+
+      function resetCalibrationCapture(helpText) {
+        state.calibrationSamples = [];
+        state.calibrationStableFrames = 0;
+        state.calibrationLastAcceptedRatio = null;
+        cameraHelpText.textContent = helpText;
+      }
+
+      function collectCalibrationSample(eyeRatio, quality) {
+        if (!quality.ok) {
+          resetCalibrationCapture(quality.message);
+          return;
+        }
+
+        if (eyeRatio <= state.MIN_CLOSED_EYE_RATIO) {
+          resetCalibrationCapture('Mantén los ojos abiertos');
+          return;
+        }
+
+        if (state.calibrationLastAcceptedRatio !== null) {
+          var maxAllowedDelta = state.calibrationLastAcceptedRatio * state.CALIBRATION_MAX_STEP_RATIO;
+          if (Math.abs(eyeRatio - state.calibrationLastAcceptedRatio) > maxAllowedDelta) {
+            resetCalibrationCapture('No te muevas. Reajustando calibración');
+            return;
+          }
+        }
+
+        state.calibrationStableFrames += 1;
+        cameraHelpText.textContent = 'Rostro correcto. Mantén la posición unos segundos.';
+
+        if (state.calibrationStableFrames < state.CALIBRATION_STABLE_FRAMES_REQUIRED) {
+          return;
+        }
+
+        state.calibrationSamples.push(eyeRatio);
+        state.calibrationLastAcceptedRatio = eyeRatio;
+        cameraHelpText.textContent = 'Calibrando ' + state.calibrationSamples.length + ' de ' + state.CALIBRATION_SAMPLES_REQUIRED;
       }
 
       function updateBlink(eyeRatio, now) {
@@ -1005,6 +1049,9 @@ button { font: inherit; }
           await cameraVideo.play();
           await ensureFaceLandmarker();
           cameraHelpText.textContent = 'Mantén los ojos abiertos y el rostro centrado.';
+          state.calibrationSamples = [];
+          state.calibrationStableFrames = 0;
+          state.calibrationLastAcceptedRatio = null;
           state.processing = true;
           state.lastVideoTime = -1;
           state.lastFaceSeenAt = performance.now();
@@ -1046,12 +1093,9 @@ button { font: inherit; }
         var eyeRatio = averageEyeRatio(landmarks);
 
         if (state.baselineEyeOpenRatio === null) {
-          cameraHelpText.textContent = quality.message;
-          if (quality.ok && eyeRatio > state.MIN_CLOSED_EYE_RATIO) {
-            state.calibrationSamples.push(eyeRatio);
-            if (state.calibrationSamples.length >= state.CALIBRATION_SAMPLES_REQUIRED) {
-              finishCalibration();
-            }
+          collectCalibrationSample(eyeRatio, quality);
+          if (state.calibrationSamples.length >= state.CALIBRATION_SAMPLES_REQUIRED) {
+            finishCalibration();
           }
           window.requestAnimationFrame(processVideoFrame);
           return;
