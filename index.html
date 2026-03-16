@@ -12,12 +12,9 @@
       --shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
       --scan: rgba(53, 255, 195, 0.95);
       --candidate: rgba(255, 216, 58, 0.98);
-    }* {
-  box-sizing: border-box;
-}
+    }* { box-sizing: border-box; }
 
-html,
-body {
+html, body {
   margin: 0;
   min-height: 100%;
   font-family: "Segoe UI", Arial, sans-serif;
@@ -25,17 +22,9 @@ body {
   color: var(--text);
 }
 
-body {
-  min-height: 100vh;
-}
-
-button {
-  font: inherit;
-}
-
-.hidden {
-  display: none !important;
-}
+body { min-height: 100vh; }
+button { font: inherit; }
+.hidden { display: none !important; }
 
 .app {
   min-height: 100vh;
@@ -91,24 +80,18 @@ button {
   stroke-linejoin: round;
 }
 
-.bubble {
-  stroke-dasharray: 900;
-  stroke-dashoffset: 900;
-  animation: draw 1s ease forwards;
-}
-
+.bubble { stroke-dasharray: 900; stroke-dashoffset: 900; animation: draw 1s ease forwards; }
 .wave {
   opacity: 0;
   stroke-dasharray: 400;
   stroke-dashoffset: 400;
-  animation: show 0.01s linear 1s forwards, draw 0.8s ease 1s forwards;
+  animation: show .01s linear 1s forwards, draw .8s ease 1s forwards;
 }
-
 .spiral {
   opacity: 0;
   stroke-dasharray: 450;
   stroke-dashoffset: 450;
-  animation: show 0.01s linear 1.8s forwards, draw 0.8s ease 1.8s forwards;
+  animation: show .01s linear 1.8s forwards, draw .8s ease 1.8s forwards;
 }
 
 .title {
@@ -119,7 +102,7 @@ button {
   color: white;
   opacity: 0;
   transform: translateY(15px);
-  animation: titleIn 0.6s ease forwards;
+  animation: titleIn .6s ease forwards;
   animation-delay: 2.6s;
 }
 
@@ -131,7 +114,7 @@ button {
   background: linear-gradient(90deg, transparent, #35ffc3, #aaff40, #35ffc3, transparent);
   box-shadow: 0 0 8px #4cffbf, 0 0 18px #4cffbf, 0 0 28px #9cff47;
   opacity: 0;
-  animation: lineIn 0.6s ease forwards;
+  animation: lineIn .6s ease forwards;
   animation-delay: 2.8s;
 }
 
@@ -258,10 +241,7 @@ button {
   scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
 }
 
-.gridScroller::-webkit-scrollbar {
-  width: 8px;
-}
-
+.gridScroller::-webkit-scrollbar { width: 8px; }
 .gridScroller::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.22);
   border-radius: 8px;
@@ -290,13 +270,8 @@ button {
   opacity: 0.98;
 }
 
-.scrollButton--up {
-  top: 8px;
-}
-
-.scrollButton--down {
-  bottom: 8px;
-}
+.scrollButton--up { top: 8px; }
+.scrollButton--down { bottom: 8px; }
 
 .scrollButton--active {
   border-color: var(--scan);
@@ -400,80 +375,31 @@ button {
   padding-bottom: 4px;
 }
 
-@keyframes draw {
-  to { stroke-dashoffset: 0; }
-}
-
-@keyframes show {
-  to { opacity: 1; }
-}
-
-@keyframes titleIn {
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes lineIn {
-  to { opacity: 1; }
-}
-
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes show { to { opacity: 1; } }
+@keyframes titleIn { to { opacity: 1; transform: translateY(0); } }
+@keyframes lineIn { to { opacity: 1; } }
 @keyframes twinkle {
-  0%, 100% { opacity: 0.2; transform: scale(0.6); }
+  0%, 100% { opacity: .2; transform: scale(.6); }
   50% { opacity: 1; transform: scale(1); }
 }
 
 @media (max-width: 640px) {
-  .main {
-    padding: 14px;
-  }
-
-  .layout {
-    min-height: calc(100vh - 28px);
-    gap: 14px;
-  }
-
-  .message {
-    min-height: 136px;
-  }
-
-  .grid {
-    gap: 12px;
-  }
-
-  .action {
-    min-height: 96px;
-    border-radius: 20px;
-  }
-
-  .confirmZone {
-    min-height: 84px;
-  }
+  .main { padding: 14px; }
+  .layout { min-height: calc(100vh - 28px); gap: 14px; }
+  .message { min-height: 136px; }
+  .grid { gap: 12px; }
+  .action { min-height: 96px; border-radius: 20px; }
+  .confirmZone { min-height: 84px; }
 }
 
 @media (max-width: 420px) {
-  .splash {
-    padding: 16px;
-  }
-
-  .stroke {
-    stroke-width: 10;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
-  }
-
-  .action {
-    min-height: 88px;
-    font-size: 1.5rem;
-  }
-
-  .cameraCard {
-    padding: 14px;
-  }
-
-  .gridScroller {
-    padding-right: 62px;
-  }
+  .splash { padding: 16px; }
+  .stroke { stroke-width: 10; }
+  .grid { grid-template-columns: 1fr; }
+  .action { min-height: 88px; font-size: 1.5rem; }
+  .cameraCard { padding: 14px; }
+  .gridScroller { padding-right: 62px; }
 }
 
   </style>
@@ -509,7 +435,7 @@ button {
   <div id="toastBox" class="toastBox">Mensaje</div>
 </div>
 
-<main id="mainScreen" class="screen main hidden" aria-label="Pantalla principal experimental">
+<main id="mainScreen" class="screen main hidden" aria-label="Pantalla principal">
   <div class="layout">
     <div id="confirmZone" class="confirmZone">Parpadeo largo activa el elemento marcado. Si una palabra queda escrita, otro parpadeo largo la confirma. Doble parpadeo corto la borra.</div>
 
@@ -526,7 +452,7 @@ button {
       </div>
     </section>
 
-    <div class="footer">Barrido integrado con flechas arriba y abajo, parpadeo estable, Wake Lock y submenú de dolor</div>
+    <div class="footer">Barrido integrado con flechas, parpadeo estable, Wake Lock y submenú funcional de dolor</div>
   </div>
 </main>
 
@@ -537,6 +463,7 @@ button {
       <video id="cameraVideo" class="cameraVideo" autoplay muted playsinline></video>
     </div>
     <p id="cameraHelpText" class="cameraCard__help">La cámara se cerrará sola cuando termine la calibración.</p>
+    <button id="retryCameraButton" type="button" class="action action--back hidden" style="min-height:64px; font-size:1.15rem;">Reintentar cámara</button>
   </div>
 </div>
 
@@ -554,6 +481,7 @@ button {
       var cameraModal = document.getElementById('cameraModal');
       var cameraHelpText = document.getElementById('cameraHelpText');
       var cameraVideo = document.getElementById('cameraVideo');
+      var retryCameraButton = document.getElementById('retryCameraButton');
       var toastLayer = document.getElementById('toastLayer');
       var toastBox = document.getElementById('toastBox');
 
@@ -583,13 +511,13 @@ button {
       var state = {
         SPLASH_DURATION_MS: 4000,
         SCAN_INTERVAL_MS: 2400,
-        LONG_BLINK_MS: 700,
+        LONG_BLINK_MS: 720,
         SHORT_BLINK_MIN_MS: 120,
         SHORT_BLINK_MAX_MS: 420,
         DOUBLE_BLINK_GAP_MS: 700,
-        BLINK_THRESHOLD_FACTOR: 0.63,
+        BLINK_THRESHOLD_FACTOR: 0.58,
         MIN_CLOSED_EYE_RATIO: 0.10,
-        CALIBRATION_SAMPLES_REQUIRED: 36,
+        CALIBRATION_SAMPLES_REQUIRED: 28,
         LOST_FACE_RESET_MS: 1200,
         RIGHT_EYE_OUTER: 33,
         RIGHT_EYE_INNER: 133,
@@ -632,7 +560,6 @@ button {
         if (!message) {
           return;
         }
-
         toastBox.textContent = message;
         toastLayer.classList.remove('hidden');
         if (toastTimer) {
@@ -669,7 +596,6 @@ button {
         if (!state.hasSpeechSupport) {
           return null;
         }
-
         var voices = window.speechSynthesis.getVoices();
         for (var i = 0; i < voices.length; i += 1) {
           if (voices[i].lang && voices[i].lang.toLowerCase().indexOf('es') === 0) {
@@ -683,7 +609,6 @@ button {
         if (!state.hasSpeechSupport) {
           return;
         }
-
         window.speechSynthesis.cancel();
         var utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'es-ES';
@@ -736,7 +661,6 @@ button {
 
       function paintScanTarget() {
         var current = getCurrentScanTarget();
-
         scrollUpButton.classList.toggle('scrollButton--active', !state.waitingConfirm && current === 'up');
         scrollDownButton.classList.toggle('scrollButton--active', !state.waitingConfirm && current === 'down');
 
@@ -780,7 +704,7 @@ button {
 
         if (menuName === 'pain') {
           setMessageNeutral('Selecciona tipo de dolor');
-          showToast('Detalle de dolor', 1800);
+          showToast('Detalle de dolor', 1600);
         } else {
           setMessageNeutral('Espera el barrido');
         }
@@ -791,7 +715,6 @@ button {
         if (!item) {
           return;
         }
-
         state.pendingAction = item;
         state.waitingConfirm = true;
         state.lastShortBlinkAt = 0;
@@ -809,7 +732,7 @@ button {
         state.shortBlinkCount = 0;
         setConfirmZoneReady(false);
         setMessageNeutral(state.currentMenu === 'pain' ? 'Selecciona tipo de dolor' : 'Espera el barrido');
-        showToast('Selección borrada', 1800);
+        showToast('Selección borrada', 1600);
         paintScanTarget();
       }
 
@@ -832,7 +755,7 @@ button {
 
         if (action.kind === 'back') {
           renderMenu(action.backTo || 'main');
-          showToast('Volviendo', 1600);
+          showToast('Volviendo', 1400);
           return;
         }
 
@@ -847,13 +770,13 @@ button {
 
         if (!state.waitingConfirm && current === 'up') {
           gridScroller.scrollBy({ top: -220, left: 0, behavior: 'smooth' });
-          showToast('Subiendo', 1200);
+          showToast('Subiendo', 1100);
           return;
         }
 
         if (!state.waitingConfirm && current === 'down') {
           gridScroller.scrollBy({ top: 220, left: 0, behavior: 'smooth' });
-          showToast('Bajando', 1200);
+          showToast('Bajando', 1100);
           return;
         }
 
@@ -896,15 +819,13 @@ button {
         var centerX = (left.x + right.x) / 2;
         var centerY = (top.y + bottom.y) / 2;
 
-        if (faceWidth < 0.18 || faceHeight < 0.20) {
+        if (faceWidth < 0.16 || faceHeight < 0.18) {
           return { ok: false, message: 'Acércate un poco' };
         }
-
-        if (faceWidth > 0.62 || faceHeight > 0.72) {
+        if (faceWidth > 0.70 || faceHeight > 0.78) {
           return { ok: false, message: 'Aléjate un poco' };
         }
-
-        if (centerX < 0.34 || centerX > 0.66 || centerY < 0.28 || centerY > 0.72) {
+        if (centerX < 0.30 || centerX > 0.70 || centerY < 0.24 || centerY > 0.76) {
           return { ok: false, message: 'Centra el rostro' };
         }
 
@@ -913,8 +834,11 @@ button {
 
       function finishCalibration() {
         var sorted = state.calibrationSamples.slice().sort(function (a, b) { return a - b; });
-        var trimCount = Math.floor(sorted.length * 0.2);
+        var trimCount = Math.floor(sorted.length * 0.15);
         var usable = sorted.slice(trimCount, sorted.length - trimCount);
+        if (!usable.length) {
+          usable = sorted;
+        }
         var total = usable.reduce(function (sum, value) { return sum + value; }, 0);
         state.baselineEyeOpenRatio = total / usable.length;
         state.calibrationSamples = [];
@@ -932,7 +856,7 @@ button {
         if (state.smoothedEyeOpenRatio === null) {
           state.smoothedEyeOpenRatio = eyeRatio;
         } else {
-          state.smoothedEyeOpenRatio = state.smoothedEyeOpenRatio * 0.72 + eyeRatio * 0.28;
+          state.smoothedEyeOpenRatio = state.smoothedEyeOpenRatio * 0.80 + eyeRatio * 0.20;
         }
 
         if (state.shortBlinkCount > 0 && now - state.lastShortBlinkAt > state.DOUBLE_BLINK_GAP_MS) {
@@ -946,6 +870,7 @@ button {
         if (closedNow) {
           state.closedFrameCount += 1;
           state.openFrameCount = 0;
+
           if (state.closedFrameCount >= 2 && !state.blinkStartTime) {
             state.blinkStartTime = now;
           }
@@ -1024,25 +949,32 @@ button {
       async function autoStartCamera() {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
           showToast('Cámara no disponible', 2200);
+          retryCameraButton.classList.remove('hidden');
           return;
         }
 
         cameraModal.classList.remove('hidden');
+        retryCameraButton.classList.add('hidden');
         showToast('Solicitando cámara', 1400);
 
         try {
-          await ensureFaceLandmarker();
-          state.mediaStream = await navigator.mediaDevices.getUserMedia({
-            audio: false,
-            video: {
-              facingMode: { ideal: 'user' },
-              width: { ideal: 640 },
-              height: { ideal: 480 }
-            }
-          });
+          if (!state.mediaStream) {
+            state.mediaStream = await navigator.mediaDevices.getUserMedia({
+              audio: false,
+              video: {
+                facingMode: { ideal: 'user' },
+                width: { ideal: 640 },
+                height: { ideal: 480 }
+              }
+            });
+          }
 
           cameraVideo.srcObject = state.mediaStream;
           await cameraVideo.play();
+          cameraHelpText.textContent = 'Cámara abierta. Cargando calibración...';
+
+          await ensureFaceLandmarker();
+
           cameraHelpText.textContent = 'Mantén los ojos abiertos y el rostro centrado.';
           state.processing = true;
           state.lastVideoTime = -1;
@@ -1050,7 +982,9 @@ button {
           processVideoFrame();
         } catch (error) {
           console.error(error);
-          cameraModal.classList.add('hidden');
+          state.processing = false;
+          cameraHelpText.textContent = 'No se pudo iniciar la cámara o la calibración. Reintenta.';
+          retryCameraButton.classList.remove('hidden');
           showToast('No se pudo iniciar la cámara', 2200);
         }
       }
@@ -1113,16 +1047,20 @@ button {
 
       scrollUpButton.addEventListener('click', function () {
         gridScroller.scrollBy({ top: -220, left: 0, behavior: 'smooth' });
-        showToast('Subiendo', 1200);
+        showToast('Subiendo', 1100);
       });
 
       scrollDownButton.addEventListener('click', function () {
         gridScroller.scrollBy({ top: 220, left: 0, behavior: 'smooth' });
-        showToast('Bajando', 1200);
+        showToast('Bajando', 1100);
       });
 
       gridScroller.addEventListener('scroll', updateScrollButtons);
       window.addEventListener('resize', updateScrollButtons);
+
+      retryCameraButton.addEventListener('click', function () {
+        autoStartCamera();
+      });
 
       window.setTimeout(showMainScreen, state.SPLASH_DURATION_MS);
     })();
