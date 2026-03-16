@@ -507,11 +507,13 @@ button {
   </div>
 </section>
 
+<div id="toastMessage" class="hidden" aria-live="polite" aria-atomic="true" style="position:fixed; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:80; padding:24px;"><div id="toastMessageBox" style="max-width:min(86vw,560px); background:rgba(8,18,30,0.94); color:#fff; border:1px solid rgba(255,255,255,0.14); border-radius:22px; box-shadow:0 12px 36px rgba(0,0,0,0.32); padding:18px 22px; text-align:center; font-size:clamp(1.1rem,4.8vw,1.6rem); line-height:1.25; font-weight:700;">Mensaje</div></div>
+
 <main id="mainScreen" class="screen main hidden" aria-label="Pantalla principal experimental">
   <div class="layout">
-    <div id="statusText" class="status">Modo estable activo. El cursor se eliminó. El barrido recorre flecha arriba, flecha abajo y botones. Parpadeo largo activa el elemento marcado; un segundo parpadeo largo confirma la palabra.</div>
+    <div id="statusText" class="status hidden">Modo estable activo. El cursor se eliminó. El barrido recorre flecha arriba, flecha abajo y botones. Parpadeo largo activa el elemento marcado; un segundo parpadeo largo confirma la palabra.</div>
 
-    <section class="trackingPanel" aria-label="Estado experimental">
+    <section class="trackingPanel hidden" aria-label="Estado experimental">
       <div class="trackingRow"><div><strong>Estado:</strong> <span id="trackingState">Esperando inicio</span></div></div>
       <div class="trackingRow"><div><strong>Calibración:</strong> <span id="calibrationState">Pendiente</span></div></div>
       <div class="trackingRow"><div><strong>Barrido:</strong> <span id="scanState">Aún no iniciado</span></div></div>
@@ -560,6 +562,9 @@ button {
       var splashScreen = document.getElementById('splashScreen');
       var mainScreen = document.getElementById('mainScreen');
       var statusText = document.getElementById('statusText');
+      var toastMessage = document.getElementById('toastMessage');
+      var toastMessageBox = document.getElementById('toastMessageBox');
+      var toastTimer = null;
       var trackingState = document.getElementById('trackingState');
       var calibrationState = document.getElementById('calibrationState');
       var scanState = document.getElementById('scanState');
@@ -619,8 +624,26 @@ button {
         lastFaceSeenAt: 0
       };
 
+      function showToast(message, durationMs) {
+        if (!message) {
+          return;
+        }
+
+        toastMessageBox.textContent = message;
+        toastMessage.classList.remove('hidden');
+
+        if (toastTimer) {
+          window.clearTimeout(toastTimer);
+        }
+
+        toastTimer = window.setTimeout(function () {
+          toastMessage.classList.add('hidden');
+        }, durationMs || 2200);
+      }
+
       function setStatus(message) {
         statusText.textContent = message;
+        showToast(message, 2200);
       }
 
       function setTracking(message) {
@@ -750,13 +773,13 @@ button {
 
         if (!state.waitingConfirm && current === 'up') {
           gridScroller.scrollBy({ top: -220, left: 0, behavior: 'smooth' });
-          setStatus('Desplazando hacia arriba.');
+          setStatus('Subiendo');
           return;
         }
 
         if (!state.waitingConfirm && current === 'down') {
           gridScroller.scrollBy({ top: 220, left: 0, behavior: 'smooth' });
-          setStatus('Desplazando hacia abajo.');
+          setStatus('Bajando');
           return;
         }
 
@@ -785,7 +808,7 @@ button {
           confirmZone.classList.remove('confirmZone--ready');
           setConfirm('No armada');
           setScan('Activo, recorriendo opciones lentamente');
-          setStatus('Mensaje confirmado y reproducido. El barrido continúa.');
+          setStatus('Palabra confirmada');
           setBlink('Confirmado');
           paintScanTarget();
         }
