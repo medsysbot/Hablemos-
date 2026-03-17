@@ -547,7 +547,15 @@ button { font: inherit; }
             { key: 'water', label: 'Agua', kind: 'speak', phrase: 'Agua', className: 'action--water' },
             { key: 'pain', label: 'Dolor', kind: 'submenu', submenu: 'pain', className: 'action--pain' },
             { key: 'bathroom', label: 'Baño', kind: 'speak', phrase: 'Baño', className: 'action--bathroom' },
-            { key: 'help', label: 'Ayuda', kind: 'speak', phrase: 'Ayuda', className: 'action--help' }
+            { key: 'help', label: 'Ayuda', kind: 'speak', phrase: 'Ayuda', className: 'action--help' },
+            { key: 'hello', label: 'Hola', kind: 'speak', phrase: 'Hola', className: 'action--water' },
+            { key: 'bye', label: 'Chau', kind: 'speak', phrase: 'Chau', className: 'action--back' },
+            { key: 'happy', label: 'Contento', kind: 'speak', phrase: 'Estoy contento', className: 'action--yes' },
+            { key: 'sad', label: 'Triste', kind: 'speak', phrase: 'Estoy triste', className: 'action--no' },
+            { key: 'hungry', label: 'Hambre', kind: 'speak', phrase: 'Tengo hambre', className: 'action--pain' },
+            { key: 'cold', label: 'Frío', kind: 'speak', phrase: 'Tengo frío', className: 'action--bathroom' },
+            { key: 'hot', label: 'Calor', kind: 'speak', phrase: 'Tengo calor', className: 'action--help' },
+            { key: 'thanks', label: 'Gracias', kind: 'speak', phrase: 'Gracias', className: 'action--water' }
           ]
         },
         pain: {
@@ -566,7 +574,8 @@ button { font: inherit; }
 
       var state = {
         SPLASH_DURATION_MS: 4000,
-        SCAN_INTERVAL_MS: 2400,
+        DEFAULT_SCAN_INTERVAL_MS: 2200,
+        ARROW_SCAN_INTERVAL_MS: 3600,
         LONG_BLINK_MS: 720,
         BLINK_THRESHOLD_FACTOR: 0.58,
         MIN_CLOSED_EYE_RATIO: 0.10,
@@ -708,10 +717,29 @@ button { font: inherit; }
           });
         }
         state.scanPosition = 0;
+        scheduleNextScan();
       }
 
       function getCurrentScanTarget() {
         return state.scanSequence[state.scanPosition] || 'button:0';
+      }
+
+      function getCurrentScanDelay() {
+        var current = getCurrentScanTarget();
+        if (current === 'up' || current === 'down') {
+          return state.ARROW_SCAN_INTERVAL_MS;
+        }
+        return state.DEFAULT_SCAN_INTERVAL_MS;
+      }
+
+      function scheduleNextScan() {
+        if (state.scanTimer) {
+          window.clearTimeout(state.scanTimer);
+        }
+        state.scanTimer = window.setTimeout(function () {
+          nextScanPosition();
+          scheduleNextScan();
+        }, getCurrentScanDelay());
       }
 
       function paintScanTarget() {
@@ -1109,7 +1137,7 @@ button { font: inherit; }
         splashScreen.classList.add('hidden');
         mainScreen.classList.remove('hidden');
         renderMenu('main');
-        state.scanTimer = window.setInterval(nextScanPosition, state.SCAN_INTERVAL_MS);
+        scheduleNextScan();
         updateScrollButtons();
         requestWakeLock();
         autoStartCamera();
