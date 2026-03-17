@@ -576,6 +576,7 @@ button { font: inherit; }
         SPLASH_DURATION_MS: 4000,
         DEFAULT_SCAN_INTERVAL_MS: 2200,
         ARROW_SCAN_INTERVAL_MS: 3600,
+        POST_ARROW_HOLD_MS: 4200,
         LONG_BLINK_MS: 720,
         BLINK_THRESHOLD_FACTOR: 0.58,
         MIN_CLOSED_EYE_RATIO: 0.10,
@@ -732,14 +733,14 @@ button { font: inherit; }
         return state.DEFAULT_SCAN_INTERVAL_MS;
       }
 
-      function scheduleNextScan() {
+      function scheduleNextScan(overrideDelay) {
         if (state.scanTimer) {
           window.clearTimeout(state.scanTimer);
         }
         state.scanTimer = window.setTimeout(function () {
           nextScanPosition();
           scheduleNextScan();
-        }, getCurrentScanDelay());
+        }, overrideDelay || getCurrentScanDelay());
       }
 
       function paintScanTarget() {
@@ -863,12 +864,14 @@ button { font: inherit; }
         if (!state.waitingDecision && current === 'up') {
           gridScroller.scrollBy({ top: -220, left: 0, behavior: 'smooth' });
           showToast('Subiendo', 1000);
+          scheduleNextScan(state.POST_ARROW_HOLD_MS);
           return;
         }
 
         if (!state.waitingDecision && current === 'down') {
           gridScroller.scrollBy({ top: 220, left: 0, behavior: 'smooth' });
           showToast('Bajando', 1000);
+          scheduleNextScan(state.POST_ARROW_HOLD_MS);
           return;
         }
 
@@ -1158,11 +1161,13 @@ button { font: inherit; }
       scrollUpButton.addEventListener('click', function () {
         gridScroller.scrollBy({ top: -220, left: 0, behavior: 'smooth' });
         showToast('Subiendo', 1000);
+        scheduleNextScan(state.POST_ARROW_HOLD_MS);
       });
 
       scrollDownButton.addEventListener('click', function () {
         gridScroller.scrollBy({ top: 220, left: 0, behavior: 'smooth' });
         showToast('Bajando', 1000);
+        scheduleNextScan(state.POST_ARROW_HOLD_MS);
       });
 
       gridScroller.addEventListener('scroll', updateScrollButtons);
