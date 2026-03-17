@@ -173,82 +173,25 @@ button { font: inherit; }
   min-height: calc(100vh - 36px);
   display: grid;
   grid-template-rows: auto auto auto 1fr auto;
-  gap: 16px;
+  gap: 10px;
 }
 
 .menuTitle,
 .confirmZone,
 .message,
 .decisionPanel {
-  border-radius: 22px;
-  box-shadow: var(--shadow);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, rgba(16, 30, 46, 0.96) 0%, rgba(10, 20, 32, 0.98) 100%);
-}
-
-.menuTitle {
-  min-height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 16px;
-  color: var(--text);
-  font-size: clamp(1.4rem, 4vw, 2rem);
-  font-weight: 700;
-}
-
-.confirmZone {
-  min-height: 86px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 16px;
-  color: var(--text-soft);
-}
-
-.message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  min-height: 156px;
-  padding: 24px;
-}
-
-.message__text {
-  margin: 0;
-  width: 100%;
-  font-size: clamp(2rem, 8vw, 4rem);
-  line-height: 1.08;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.message--candidate {
-  border-color: rgba(255, 216, 58, 0.42);
-  box-shadow: 0 0 0 3px rgba(255, 216, 58, 0.12), var(--shadow);
-}
-
-.message--confirm {
-  border-color: rgba(255, 255, 255, 0.36);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1), var(--shadow);
-}
-
-.decisionPanel {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  padding: 14px;
+  gap: 10px;
+  padding: 10px;
 }
 
 .decisionButton {
-  min-height: 96px;
-  border-radius: 20px;
+  min-height: 74px;
+  border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: var(--text);
-  font-size: clamp(1.35rem, 4vw, 1.9rem);
+  font-size: clamp(1.1rem, 3.4vw, 1.45rem);
   font-weight: 700;
   box-shadow: var(--shadow);
   background: linear-gradient(180deg, rgba(30, 46, 62, 0.98) 0%, rgba(14, 24, 35, 1) 100%);
@@ -274,7 +217,7 @@ button { font: inherit; }
 }
 
 .gridScroller {
-  max-height: min(50vh, 470px);
+  max-height: min(64vh, 620px);
   overflow-y: auto;
   padding-right: 72px;
   scrollbar-width: thin;
@@ -320,7 +263,7 @@ button { font: inherit; }
 }
 
 .action {
-  min-height: 112px;
+  min-height: 98px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
   color: var(--text);
@@ -425,13 +368,15 @@ button { font: inherit; }
 }
 
 @media (max-width: 640px) {
-  .main { padding: 14px; }
-  .layout { min-height: calc(100vh - 28px); gap: 14px; }
-  .message { min-height: 136px; }
-  .grid { gap: 12px; }
-  .action { min-height: 96px; border-radius: 20px; }
-  .confirmZone { min-height: 84px; }
+  .main { padding: 12px; }
+  .layout { min-height: calc(100vh - 24px); gap: 8px; }
+  .message { min-height: 92px; }
+  .grid { gap: 10px; }
+  .action { min-height: 88px; border-radius: 18px; }
+  .confirmZone { min-height: 52px; font-size: 0.9rem; }
+  .menuTitle { min-height: 46px; }
   .decisionPanel { grid-template-columns: 1fr; }
+}
 }
 
 @media (max-width: 420px) {
@@ -480,7 +425,7 @@ button { font: inherit; }
   <div class="layout">
     <div id="menuTitle" class="menuTitle">Comunicación</div>
 
-    <div id="confirmZone" class="confirmZone">Parpadeo largo activa el elemento marcado. Si una palabra queda escrita, el barrido pasa a Confirmar y Borrar.</div>
+    <div id="confirmZone" class="confirmZone">Parpadeo largo activa. Si hay palabra, elige Confirmar o Borrar.</div>
 
     <section id="messagePanel" class="message" aria-live="polite" aria-atomic="true">
       <h1 id="messageText" class="message__text">Iniciando cámara y calibración</h1>
@@ -500,7 +445,7 @@ button { font: inherit; }
       </div>
     </section>
 
-    <div class="footer">Versión revisada completa: barrido, dolor por submenú y decisión explícita Confirmar/Borrar</div>
+    <div class="footer hidden"></div>
   </div>
 </main>
 
