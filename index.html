@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,382 +13,389 @@
       --shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
       --scan: rgba(53, 255, 195, 0.95);
       --candidate: rgba(255, 216, 58, 0.98);
-    }* { box-sizing: border-box; }
+    }
 
-html, body {
-  margin: 0;
-  min-height: 100%;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
+    * { box-sizing: border-box; }
 
-body { min-height: 100vh; }
-button { font: inherit; }
-.hidden { display: none !important; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
 
-.app {
-  min-height: 100vh;
-  width: 100%;
-  overflow: hidden;
-  background: radial-gradient(circle at center, var(--bg-soft) 0%, #020814 72%);
-}
+    body { min-height: 100vh; }
+    button { font: inherit; }
+    .hidden { display: none !important; }
 
-.screen {
-  min-height: 100vh;
-  width: 100%;
-}
+    .app {
+      min-height: 100vh;
+      width: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at center, var(--bg-soft) 0%, #020814 72%);
+    }
 
-.splash {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
+    .screen {
+      min-height: 100vh;
+      width: 100%;
+    }
 
-.splash__container {
-  text-align: center;
-  position: relative;
-  width: min(100%, 520px);
-}
+    .splash {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
 
-.logoGlow {
-  position: absolute;
-  width: min(84vw, 420px);
-  height: min(84vw, 420px);
-  background: radial-gradient(circle, rgba(80, 255, 180, 0.25) 0%, rgba(80, 255, 180, 0.12) 40%, transparent 70%);
-  filter: blur(20px);
-  top: max(-40px, -3vw);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 0;
-  pointer-events: none;
-}
+    .splash__container {
+      text-align: center;
+      position: relative;
+      width: min(100%, 520px);
+    }
 
-.splash svg {
-  width: min(84vw, 420px);
-  max-width: 420px;
-  position: relative;
-  z-index: 2;
-  filter: drop-shadow(0 0 20px rgba(80, 255, 180, 0.35));
-}
+    .logoGlow {
+      position: absolute;
+      width: min(84vw, 420px);
+      height: min(84vw, 420px);
+      background: radial-gradient(circle, rgba(80, 255, 180, 0.25) 0%, rgba(80, 255, 180, 0.12) 40%, transparent 70%);
+      filter: blur(20px);
+      top: max(-40px, -3vw);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 0;
+      pointer-events: none;
+    }
 
-.stroke {
-  fill: none;
-  stroke: url(#grad);
-  stroke-width: 12;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
+    .splash svg {
+      width: min(84vw, 420px);
+      max-width: 420px;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 0 20px rgba(80, 255, 180, 0.35));
+    }
 
-.bubble { stroke-dasharray: 900; stroke-dashoffset: 900; animation: draw 1s ease forwards; }
-.wave {
-  opacity: 0;
-  stroke-dasharray: 400;
-  stroke-dashoffset: 400;
-  animation: show .01s linear 1s forwards, draw .8s ease 1s forwards;
-}
-.spiral {
-  opacity: 0;
-  stroke-dasharray: 450;
-  stroke-dashoffset: 450;
-  animation: show .01s linear 1.8s forwards, draw .8s ease 1.8s forwards;
-}
+    .stroke {
+      fill: none;
+      stroke: url(#grad);
+      stroke-width: 12;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
-.title {
-  margin-top: 22px;
-  font-size: clamp(2.2rem, 6vw, 3.5rem);
-  font-weight: 300;
-  letter-spacing: -1px;
-  color: white;
-  opacity: 0;
-  transform: translateY(15px);
-  animation: titleIn .6s ease forwards;
-  animation-delay: 2.6s;
-}
+    .bubble { stroke-dasharray: 900; stroke-dashoffset: 900; animation: draw 1s ease forwards; }
+    .wave {
+      opacity: 0;
+      stroke-dasharray: 400;
+      stroke-dashoffset: 400;
+      animation: show .01s linear 1s forwards, draw .8s ease 1s forwards;
+    }
+    .spiral {
+      opacity: 0;
+      stroke-dasharray: 450;
+      stroke-dashoffset: 450;
+      animation: show .01s linear 1.8s forwards, draw .8s ease 1.8s forwards;
+    }
 
-.glowLine {
-  width: min(58vw, 240px);
-  height: 4px;
-  margin: 14px auto 0;
-  border-radius: 4px;
-  background: linear-gradient(90deg, transparent, #35ffc3, #aaff40, #35ffc3, transparent);
-  box-shadow: 0 0 8px #4cffbf, 0 0 18px #4cffbf, 0 0 28px #9cff47;
-  opacity: 0;
-  animation: lineIn .6s ease forwards;
-  animation-delay: 2.8s;
-}
+    .title {
+      margin-top: 22px;
+      font-size: clamp(2.2rem, 6vw, 3.5rem);
+      font-weight: 300;
+      letter-spacing: -1px;
+      color: white;
+      opacity: 0;
+      transform: translateY(15px);
+      animation: titleIn .6s ease forwards;
+      animation-delay: 2.6s;
+    }
 
-.particle {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #dfff75;
-  box-shadow: 0 0 10px #dfff75;
-  animation: twinkle 3s infinite ease-in-out;
-  pointer-events: none;
-}
+    .glowLine {
+      width: min(58vw, 240px);
+      height: 4px;
+      margin: 14px auto 0;
+      border-radius: 4px;
+      background: linear-gradient(90deg, transparent, #35ffc3, #aaff40, #35ffc3, transparent);
+      box-shadow: 0 0 8px #4cffbf, 0 0 18px #4cffbf, 0 0 28px #9cff47;
+      opacity: 0;
+      animation: lineIn .6s ease forwards;
+      animation-delay: 2.8s;
+    }
 
-.p1 { top: -30px; left: 30px; }
-.p2 { top: -10px; right: 20px; }
-.p3 { top: 20px; left: -10px; }
-.p4 { top: 40px; right: -10px; }
-.p5 { top: 60px; left: 20px; }
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #dfff75;
+      box-shadow: 0 0 10px #dfff75;
+      animation: twinkle 3s infinite ease-in-out;
+      pointer-events: none;
+    }
 
-.toastLayer {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 80;
-  padding: 24px;
-}
+    .p1 { top: -30px; left: 30px; }
+    .p2 { top: -10px; right: 20px; }
+    .p3 { top: 20px; left: -10px; }
+    .p4 { top: 40px; right: -10px; }
+    .p5 { top: 60px; left: 20px; }
 
-.toastBox {
-  max-width: min(86vw, 560px);
-  background: rgba(8, 18, 30, 0.94);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 22px;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.32);
-  padding: 18px 22px;
-  text-align: center;
-  font-size: clamp(1.1rem, 4.8vw, 1.6rem);
-  line-height: 1.25;
-  font-weight: 700;
-}
+    .toastLayer {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 80;
+      padding: 24px;
+    }
 
-.main {
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  padding: 18px;
-  background: linear-gradient(180deg, #07111d 0%, #0b1828 100%);
-}
+    .toastBox {
+      max-width: min(86vw, 560px);
+      background: rgba(8, 18, 30, 0.94);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 22px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.32);
+      padding: 18px 22px;
+      text-align: center;
+      font-size: clamp(1.1rem, 4.8vw, 1.6rem);
+      line-height: 1.25;
+      font-weight: 700;
+    }
 
-.layout {
-  width: min(100%, 940px);
-  min-height: calc(100vh - 36px);
-  display: grid;
-  grid-template-rows: auto auto auto 1fr auto;
-  gap: 10px;
-}
+    .main {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      padding: 18px;
+      background: linear-gradient(180deg, #07111d 0%, #0b1828 100%);
+    }
 
-.menuTitle,
-.confirmZone,
-.message,
-.decisionPanel {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  padding: 10px;
-}
+    .layout {
+      width: min(100%, 940px);
+      min-height: calc(100vh - 36px);
+      display: grid;
+      grid-template-rows: auto auto auto 1fr auto;
+      gap: 10px;
+    }
 
-.decisionButton {
-  min-height: 74px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--text);
-  font-size: clamp(1.1rem, 3.4vw, 1.45rem);
-  font-weight: 700;
-  box-shadow: var(--shadow);
-  background: linear-gradient(180deg, rgba(30, 46, 62, 0.98) 0%, rgba(14, 24, 35, 1) 100%);
-}
+    .menuTitle,
+    .confirmZone,
+    .message,
+    .decisionPanel {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      padding: 10px;
+    }
 
-.decisionButton--confirm {
-  background: linear-gradient(180deg, #245a3d 0%, #163825 100%);
-}
+    .decisionButton {
+      min-height: 74px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text);
+      font-size: clamp(1.1rem, 3.4vw, 1.45rem);
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      background: linear-gradient(180deg, rgba(30, 46, 62, 0.98) 0%, rgba(14, 24, 35, 1) 100%);
+    }
 
-.decisionButton--delete {
-  background: linear-gradient(180deg, #7a2525 0%, #491515 100%);
-}
+    .decisionButton--confirm {
+      background: linear-gradient(180deg, #245a3d 0%, #163825 100%);
+    }
 
-.decisionButton--active {
-  border-color: var(--scan);
-  box-shadow: 0 0 0 3px rgba(53, 255, 195, 0.22), var(--shadow);
-  transform: scale(1.01);
-}
+    .decisionButton--delete {
+      background: linear-gradient(180deg, #7a2525 0%, #491515 100%);
+    }
 
-.gridWrap {
-  position: relative;
-  min-height: 280px;
-}
+    .decisionButton--active {
+      border-color: var(--scan);
+      box-shadow: 0 0 0 3px rgba(53, 255, 195, 0.22), var(--shadow);
+      transform: scale(1.01);
+    }
 
-.gridScroller {
-  max-height: min(64vh, 620px);
-  overflow-y: auto;
-  padding-right: 72px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
-}
+    .gridWrap {
+      position: relative;
+      min-height: 280px;
+    }
 
-.gridScroller::-webkit-scrollbar { width: 8px; }
-.gridScroller::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.22);
-  border-radius: 8px;
-}
+    .gridScroller {
+      max-height: min(64vh, 620px);
+      overflow-y: auto;
+      padding-right: 72px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+    }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  align-content: start;
-}
+    .gridScroller::-webkit-scrollbar { width: 8px; }
+    .gridScroller::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.22);
+      border-radius: 8px;
+    }
 
-.scrollButton {
-  position: absolute;
-  right: 8px;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: linear-gradient(180deg, rgba(30, 46, 62, 0.98) 0%, rgba(14, 24, 35, 1) 100%);
-  color: var(--text);
-  font-size: 1.6rem;
-  font-weight: 700;
-  box-shadow: var(--shadow);
-  z-index: 5;
-  opacity: 0.98;
-}
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      align-content: start;
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+    }
 
-.scrollButton--up { top: 8px; }
-.scrollButton--down { bottom: 8px; }
+    .scrollButton {
+      position: absolute;
+      right: 8px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: linear-gradient(180deg, rgba(30, 46, 62, 0.98) 0%, rgba(14, 24, 35, 1) 100%);
+      color: var(--text);
+      font-size: 1.6rem;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      z-index: 5;
+      opacity: 0.98;
+    }
 
-.scrollButton--active {
-  border-color: var(--scan);
-  box-shadow: 0 0 0 3px rgba(53, 255, 195, 0.22), var(--shadow);
-  transform: scale(1.03);
-}
+    .scrollButton--up { top: 8px; }
+    .scrollButton--down { bottom: 8px; }
 
-.action {
-  min-height: 98px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  color: var(--text);
-  font-size: clamp(1.55rem, 4.4vw, 2.25rem);
-  font-weight: 700;
-  padding: 20px 16px;
-  box-shadow: var(--shadow);
-  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
-}
+    .scrollButton--active {
+      border-color: var(--scan);
+      box-shadow: 0 0 0 3px rgba(53, 255, 195, 0.22), var(--shadow);
+      transform: scale(1.03);
+    }
 
-.action--yes { background: linear-gradient(180deg, #245a3d 0%, #163825 100%); }
-.action--no { background: linear-gradient(180deg, #7a2525 0%, #491515 100%); }
-.action--water { background: linear-gradient(180deg, #106b8e 0%, #0a4358 100%); }
-.action--pain { background: linear-gradient(180deg, #7d4c00 0%, #4f2f00 100%); }
-.action--bathroom { background: linear-gradient(180deg, #4550a6 0%, #2a316a 100%); }
-.action--help { background: linear-gradient(180deg, #7a5d00 0%, #4b3900 100%); }
-.action--back { background: linear-gradient(180deg, #3f4a57 0%, #29313b 100%); }
+    .action {
+      min-height: 98px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      color: var(--text);
+      font-size: clamp(1.55rem, 4.4vw, 2.25rem);
+      font-weight: 700;
+      padding: 20px 16px;
+      box-shadow: var(--shadow);
+      transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    }
 
-.action--scan {
-  border-color: var(--scan);
-  box-shadow: 0 0 0 3px rgba(53, 255, 195, 0.22), var(--shadow);
-  transform: scale(1.01);
-}
+    .action--yes { background: linear-gradient(180deg, #245a3d 0%, #163825 100%); }
+    .action--no { background: linear-gradient(180deg, #7a2525 0%, #491515 100%); }
+    .action--water { background: linear-gradient(180deg, #106b8e 0%, #0a4358 100%); }
+    .action--pain { background: linear-gradient(180deg, #7d4c00 0%, #4f2f00 100%); }
+    .action--bathroom { background: linear-gradient(180deg, #4550a6 0%, #2a316a 100%); }
+    .action--help { background: linear-gradient(180deg, #7a5d00 0%, #4b3900 100%); }
+    .action--back { background: linear-gradient(180deg, #3f4a57 0%, #29313b 100%); }
 
-.action--candidate {
-  border-color: var(--candidate);
-  box-shadow: 0 0 0 3px rgba(255, 216, 58, 0.22), var(--shadow);
-  transform: scale(1.01);
-}
+    .action--scan {
+      border-color: var(--scan);
+      box-shadow: 0 0 0 3px rgba(53, 255, 195, 0.22), var(--shadow);
+      transform: scale(1.01);
+    }
 
-.cameraModal {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(2, 8, 20, 0.84);
-  backdrop-filter: blur(6px);
-}
+    .action--candidate {
+      border-color: var(--candidate);
+      box-shadow: 0 0 0 3px rgba(255, 216, 58, 0.22), var(--shadow);
+      transform: scale(1.01);
+    }
 
-.cameraCard {
-  width: min(100%, 420px);
-  display: grid;
-  gap: 12px;
-  background: rgba(8, 18, 30, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  padding: 16px;
-  box-shadow: var(--shadow);
-}
+    .cameraModal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(2, 8, 20, 0.84);
+      backdrop-filter: blur(6px);
+    }
 
-.cameraCard__title {
-  margin: 0;
-  text-align: center;
-  color: var(--text-soft);
-  font-size: 1rem;
-  font-weight: 600;
-}
+    .cameraCard {
+      width: min(100%, 420px);
+      display: grid;
+      gap: 12px;
+      background: rgba(8, 18, 30, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
 
-.cameraWrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  border-radius: 18px;
-  overflow: hidden;
-  background: #020814;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
+    .cameraCard__title {
+      margin: 0;
+      text-align: center;
+      color: var(--text-soft);
+      font-size: 1rem;
+      font-weight: 600;
+    }
 
-.cameraVideo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scaleX(-1);
-  background: #020814;
-}
+    .cameraWrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #020814;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
 
-.cameraCard__help {
-  margin: 0;
-  text-align: center;
-  color: var(--text-soft);
-  font-size: 0.95rem;
-  line-height: 1.35;
-}
+    .cameraVideo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+      background: #020814;
+    }
 
-.footer {
-  text-align: center;
-  color: rgba(255, 255, 255, 0.64);
-  font-size: 0.95rem;
-  padding-bottom: 4px;
-}
+    .cameraCard__help {
+      margin: 0;
+      text-align: center;
+      color: var(--text-soft);
+      font-size: 0.95rem;
+      line-height: 1.35;
+    }
 
-@keyframes draw { to { stroke-dashoffset: 0; } }
-@keyframes show { to { opacity: 1; } }
-@keyframes titleIn { to { opacity: 1; transform: translateY(0); } }
-@keyframes lineIn { to { opacity: 1; } }
-@keyframes twinkle {
-  0%, 100% { opacity: .2; transform: scale(.6); }
-  50% { opacity: 1; transform: scale(1); }
-}
+    .footer {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.64);
+      font-size: 0.95rem;
+      padding-bottom: 4px;
+    }
 
-@media (max-width: 640px) {
-  .main { padding: 12px; }
-  .layout { min-height: calc(100vh - 24px); gap: 8px; }
-  .message { min-height: 92px; }
-  .grid { gap: 10px; }
-  .action { min-height: 88px; border-radius: 18px; }
-  .confirmZone { min-height: 52px; font-size: 0.9rem; }
-  .menuTitle { min-height: 46px; }
-  .decisionPanel { grid-template-columns: 1fr; }
-}
-}
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+    @keyframes show { to { opacity: 1; } }
+    @keyframes titleIn { to { opacity: 1; transform: translateY(0); } }
+    @keyframes lineIn { to { opacity: 1; } }
+    @keyframes twinkle {
+      0%, 100% { opacity: .2; transform: scale(.6); }
+      50% { opacity: 1; transform: scale(1); }
+    }
 
-@media (max-width: 420px) {
-  .splash { padding: 16px; }
-  .stroke { stroke-width: 10; }
-  .grid { grid-template-columns: 1fr; }
-  .action { min-height: 88px; font-size: 1.5rem; }
-  .cameraCard { padding: 14px; }
-  .gridScroller { padding-right: 62px; }
-}
+    @media (max-width: 640px) {
+      .main { padding: 12px; }
+      .layout { min-height: calc(100vh - 24px); gap: 8px; }
+      .message { min-height: 92px; }
+      .grid { gap: 10px; }
+      .action { min-height: 88px; border-radius: 18px; }
+      .confirmZone { min-height: 52px; font-size: 0.9rem; }
+      .menuTitle { min-height: 46px; }
+      .decisionPanel { grid-template-columns: 1fr; }
+    }
+    }
 
+    @media (max-width: 420px) {
+      .splash { padding: 16px; }
+      .stroke { stroke-width: 10; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+      .action { min-height: 84px; font-size: 1.3rem; }
+      .cameraCard { padding: 14px; }
+      .gridScroller { padding-right: 62px; }
+    }
+      .cameraCard { padding: 14px; }
+      .gridScroller { padding-right: 62px; }
+    }
   </style>
 </head>
 <body>
@@ -399,67 +407,70 @@ button { font: inherit; }
         <div class="particle p2"></div>
         <div class="particle p3"></div>
         <div class="particle p4"></div>
-        <div class="particle p5"></div><svg viewBox="0 0 500 350" aria-hidden="true" focusable="false">
-      <defs>
-        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#29e6c9"></stop>
-          <stop offset="60%" stop-color="#9df545"></stop>
-          <stop offset="100%" stop-color="#ffd83a"></stop>
-        </linearGradient>
-      </defs>
-      <path class="stroke bubble" d="M70 180 C70 110 120 70 200 70 H300 C380 70 430 110 430 180 C430 250 380 290 300 290 H200 L150 320 L160 285 C110 270 70 235 70 180 Z"></path>
-      <path class="stroke wave" d="M120 180 L150 180 L175 140 L210 220 L250 120 L290 220 L315 180"></path>
-      <path class="stroke spiral" d="M320 180 C350 180 370 200 370 220 C370 245 350 260 325 260 C295 260 270 235 270 205 C270 170 300 145 335 145 C380 145 410 175 410 220"></path>
-    </svg>
+        <div class="particle p5"></div>
 
-    <div class="title">Hablemos</div>
-    <div class="glowLine"></div>
-  </div>
-</section>
+        <svg viewBox="0 0 500 350" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#29e6c9"></stop>
+              <stop offset="60%" stop-color="#9df545"></stop>
+              <stop offset="100%" stop-color="#ffd83a"></stop>
+            </linearGradient>
+          </defs>
+          <path class="stroke bubble" d="M70 180 C70 110 120 70 200 70 H300 C380 70 430 110 430 180 C430 250 380 290 300 290 H200 L150 320 L160 285 C110 270 70 235 70 180 Z"></path>
+          <path class="stroke wave" d="M120 180 L150 180 L175 140 L210 220 L250 120 L290 220 L315 180"></path>
+          <path class="stroke spiral" d="M320 180 C350 180 370 200 370 220 C370 245 350 260 325 260 C295 260 270 235 270 205 C270 170 300 145 335 145 C380 145 410 175 410 220"></path>
+        </svg>
 
-<div id="toastLayer" class="toastLayer hidden" aria-live="polite" aria-atomic="true">
-  <div id="toastBox" class="toastBox">Mensaje</div>
-</div>
-
-<main id="mainScreen" class="screen main hidden" aria-label="Pantalla principal">
-  <div class="layout">
-    <div id="menuTitle" class="menuTitle">Comunicación</div>
-
-    <div id="confirmZone" class="confirmZone">Parpadeo largo activa. Si hay palabra, elige Confirmar o Borrar.</div>
-
-    <section id="messagePanel" class="message" aria-live="polite" aria-atomic="true">
-      <h1 id="messageText" class="message__text">Iniciando cámara y calibración</h1>
-    </section>
-
-    <section id="decisionPanel" class="decisionPanel hidden" aria-label="Confirmar o borrar selección">
-      <button id="confirmDecisionButton" type="button" class="decisionButton decisionButton--confirm">Confirmar</button>
-      <button id="deleteDecisionButton" type="button" class="decisionButton decisionButton--delete">Borrar</button>
-    </section>
-
-    <section class="gridWrap" aria-label="Opciones de comunicación">
-      <button id="scrollUpButton" type="button" class="scrollButton scrollButton--up" aria-label="Subir">↑</button>
-      <button id="scrollDownButton" type="button" class="scrollButton scrollButton--down" aria-label="Bajar">↓</button>
-
-      <div id="gridScroller" class="gridScroller">
-        <div id="actionsGrid" class="grid"></div>
+        <div class="title">Hablemos</div>
+        <div class="glowLine"></div>
       </div>
     </section>
 
-    <div class="footer hidden"></div>
-  </div>
-</main>
-
-<div id="cameraModal" class="cameraModal hidden" aria-label="Calibración de cámara">
-  <div class="cameraCard">
-    <p class="cameraCard__title">Mantén los ojos abiertos y el rostro centrado</p>
-    <div class="cameraWrap">
-      <video id="cameraVideo" class="cameraVideo" autoplay muted playsinline></video>
+    <div id="toastLayer" class="toastLayer hidden" aria-live="polite" aria-atomic="true">
+      <div id="toastBox" class="toastBox">Mensaje</div>
     </div>
-    <p id="cameraHelpText" class="cameraCard__help">La cámara se cerrará sola cuando termine la calibración.</p>
-  </div>
-</div>
 
-  </div>  <script>
+    <main id="mainScreen" class="screen main hidden" aria-label="Pantalla principal">
+      <div class="layout">
+        <div id="menuTitle" class="menuTitle">Comunicación</div>
+
+        <div id="confirmZone" class="confirmZone">Parpadeo largo activa. Si hay palabra, elige Confirmar o Borrar.</div>
+
+        <section id="messagePanel" class="message" aria-live="polite" aria-atomic="true">
+          <h1 id="messageText" class="message__text">Iniciando cámara y calibración</h1>
+        </section>
+
+        <section id="decisionPanel" class="decisionPanel hidden" aria-label="Confirmar o borrar selección">
+          <button id="confirmDecisionButton" type="button" class="decisionButton decisionButton--confirm">Confirmar</button>
+          <button id="deleteDecisionButton" type="button" class="decisionButton decisionButton--delete">Borrar</button>
+        </section>
+
+        <section class="gridWrap" aria-label="Opciones de comunicación">
+          <button id="scrollUpButton" type="button" class="scrollButton scrollButton--up" aria-label="Subir">↑</button>
+          <button id="scrollDownButton" type="button" class="scrollButton scrollButton--down" aria-label="Bajar">↓</button>
+
+          <div id="gridScroller" class="gridScroller">
+            <div id="actionsGrid" class="grid"></div>
+          </div>
+        </section>
+
+        <div class="footer hidden"></div>
+      </div>
+    </main>
+
+    <div id="cameraModal" class="cameraModal hidden" aria-label="Calibración de cámara">
+      <div class="cameraCard">
+        <p class="cameraCard__title">Mantén los ojos abiertos y el rostro centrado</p>
+        <div class="cameraWrap">
+          <video id="cameraVideo" class="cameraVideo" autoplay muted playsinline></video>
+        </div>
+        <p id="cameraHelpText" class="cameraCard__help">La cámara se cerrará sola cuando termine la calibración.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
     (function () {
       var splashScreen = document.getElementById('splashScreen');
       var mainScreen = document.getElementById('mainScreen');
@@ -493,14 +504,10 @@ button { font: inherit; }
             { key: 'pain', label: 'Dolor', kind: 'submenu', submenu: 'pain', className: 'action--pain' },
             { key: 'bathroom', label: 'Baño', kind: 'speak', phrase: 'Baño', className: 'action--bathroom' },
             { key: 'help', label: 'Ayuda', kind: 'speak', phrase: 'Ayuda', className: 'action--help' },
-            { key: 'hello', label: 'Hola', kind: 'speak', phrase: 'Hola', className: 'action--water' },
-            { key: 'bye', label: 'Chau', kind: 'speak', phrase: 'Chau', className: 'action--back' },
-            { key: 'happy', label: 'Contento', kind: 'speak', phrase: 'Estoy contento', className: 'action--yes' },
-            { key: 'sad', label: 'Triste', kind: 'speak', phrase: 'Estoy triste', className: 'action--no' },
-            { key: 'hungry', label: 'Hambre', kind: 'speak', phrase: 'Tengo hambre', className: 'action--pain' },
-            { key: 'cold', label: 'Frío', kind: 'speak', phrase: 'Tengo frío', className: 'action--bathroom' },
-            { key: 'hot', label: 'Calor', kind: 'speak', phrase: 'Tengo calor', className: 'action--help' },
-            { key: 'thanks', label: 'Gracias', kind: 'speak', phrase: 'Gracias', className: 'action--water' }
+            { key: 'social', label: 'Social', kind: 'submenu', submenu: 'social', className: 'action--water' },
+            { key: 'emotions', label: 'Emociones', kind: 'submenu', submenu: 'emotions', className: 'action--yes' },
+            { key: 'needs', label: 'Necesidades', kind: 'submenu', submenu: 'needs', className: 'action--bathroom' },
+            { key: 'position', label: 'Posición', kind: 'submenu', submenu: 'position', className: 'action--back' }
           ]
         },
         pain: {
@@ -513,6 +520,54 @@ button { font: inherit; }
             { key: 'pain-legs', label: 'Piernas', kind: 'speak', phrase: 'Dolor de piernas', className: 'action--pain' },
             { key: 'pain-arms', label: 'Brazos', kind: 'speak', phrase: 'Dolor de brazos', className: 'action--pain' },
             { key: 'pain-back-main', label: 'Volver', kind: 'back', backTo: 'main', className: 'action--back' }
+          ]
+        },
+        social: {
+          title: 'Social',
+          items: [
+            { key: 'hello', label: 'Hola', kind: 'speak', phrase: 'Hola', className: 'action--water' },
+            { key: 'bye', label: 'Chau', kind: 'speak', phrase: 'Chau', className: 'action--back' },
+            { key: 'thanks', label: 'Gracias', kind: 'speak', phrase: 'Gracias', className: 'action--yes' },
+            { key: 'please', label: 'Por favor', kind: 'speak', phrase: 'Por favor', className: 'action--help' },
+            { key: 'come', label: 'Ven', kind: 'speak', phrase: 'Ven', className: 'action--bathroom' },
+            { key: 'wait', label: 'Espera', kind: 'speak', phrase: 'Espera', className: 'action--no' },
+            { key: 'social-back-main', label: 'Volver', kind: 'back', backTo: 'main', className: 'action--back' }
+          ]
+        },
+        emotions: {
+          title: 'Emociones',
+          items: [
+            { key: 'happy', label: 'Contento', kind: 'speak', phrase: 'Estoy contento', className: 'action--yes' },
+            { key: 'sad', label: 'Triste', kind: 'speak', phrase: 'Estoy triste', className: 'action--no' },
+            { key: 'tired', label: 'Cansado', kind: 'speak', phrase: 'Estoy cansado', className: 'action--bathroom' },
+            { key: 'nervous', label: 'Nervioso', kind: 'speak', phrase: 'Estoy nervioso', className: 'action--help' },
+            { key: 'scared', label: 'Miedo', kind: 'speak', phrase: 'Tengo miedo', className: 'action--pain' },
+            { key: 'calm', label: 'Tranquilo', kind: 'speak', phrase: 'Estoy tranquilo', className: 'action--water' },
+            { key: 'emotions-back-main', label: 'Volver', kind: 'back', backTo: 'main', className: 'action--back' }
+          ]
+        },
+        needs: {
+          title: 'Necesidades',
+          items: [
+            { key: 'hungry', label: 'Hambre', kind: 'speak', phrase: 'Tengo hambre', className: 'action--pain' },
+            { key: 'cold', label: 'Frío', kind: 'speak', phrase: 'Tengo frío', className: 'action--bathroom' },
+            { key: 'hot', label: 'Calor', kind: 'speak', phrase: 'Tengo calor', className: 'action--help' },
+            { key: 'sleep', label: 'Dormir', kind: 'speak', phrase: 'Quiero dormir', className: 'action--back' },
+            { key: 'rest', label: 'Descansar', kind: 'speak', phrase: 'Quiero descansar', className: 'action--yes' },
+            { key: 'eat', label: 'Comer', kind: 'speak', phrase: 'Quiero comer', className: 'action--water' },
+            { key: 'needs-back-main', label: 'Volver', kind: 'back', backTo: 'main', className: 'action--back' }
+          ]
+        },
+        position: {
+          title: 'Posición',
+          items: [
+            { key: 'turn', label: 'Girar', kind: 'speak', phrase: 'Quiero que me giren', className: 'action--bathroom' },
+            { key: 'sit', label: 'Sentar', kind: 'speak', phrase: 'Quiero sentarme', className: 'action--yes' },
+            { key: 'adjust', label: 'Acomodar', kind: 'speak', phrase: 'Quiero acomodarme', className: 'action--water' },
+            { key: 'lift', label: 'Levantar', kind: 'speak', phrase: 'Quiero que me levanten', className: 'action--help' },
+            { key: 'move-legs', label: 'Piernas', kind: 'speak', phrase: 'Quiero mover las piernas', className: 'action--pain' },
+            { key: 'move-arms', label: 'Brazos', kind: 'speak', phrase: 'Quiero mover los brazos', className: 'action--pain' },
+            { key: 'position-back-main', label: 'Volver', kind: 'back', backTo: 'main', className: 'action--back' }
           ]
         }
       };
@@ -743,11 +798,11 @@ button { font: inherit; }
         paintScanTarget();
         updateScrollButtons();
 
-        if (menuName === 'pain') {
-          setMessageNeutral('Selecciona tipo de dolor');
-          showToast('Submenú de dolor', 1600);
-        } else {
+        if (menuName === 'main') {
           setMessageNeutral('Espera el barrido');
+        } else {
+          setMessageNeutral('Selecciona una opción');
+          showToast(menu.title, 1400);
         }
       }
 
@@ -1120,5 +1175,6 @@ button { font: inherit; }
 
       window.setTimeout(showMainScreen, state.SPLASH_DURATION_MS);
     })();
-  </script></body>
+  </script>
+</body>
 </html>
