@@ -547,6 +547,10 @@ button { font: inherit; }
 
   </div>  <script>
     (function () {
+      var MEDIAPIPE_BUNDLE_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs';
+      var MEDIAPIPE_WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm';
+      var FACE_LANDMARKER_MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
+
       var splashScreen = document.getElementById('splashScreen');
       var mainScreen = document.getElementById('mainScreen');
       var menuTitle = document.getElementById('menuTitle');
@@ -570,6 +574,7 @@ button { font: inherit; }
 
       var toastTimer = null;
       var wakeLockSentinel = null;
+      var mediapipeModulePromise = null;
 
       var menuConfig = {
         main: {
@@ -679,6 +684,7 @@ button { font: inherit; }
         faceLandmarker: null,
         mediaStream: null,
         processing: false,
+        detectorReady: false,
         lastVideoTime: -1,
         scanTimer: null,
         scanSequence: [],
@@ -1069,6 +1075,7 @@ button { font: inherit; }
         state.calibrationLastAcceptedRatio = null;
         state.calibrationStartedAt = 0;
         state.smoothedEyeOpenRatio = baseline;
+        state.detectorReady = true;
         cameraModal.classList.add('hidden');
         retryCameraButton.classList.add('hidden');
         showToast('Calibración completa', 1700);
@@ -1119,67 +1126,95 @@ button { font: inherit; }
         }
       }
 
+      function withTimeout(promise, ms, label) {
+        return Promise.race([
+          promise,
+          new Promise(function (_, reject) {
+            window.setTimeout(function () {
+              reject(new Error(label));
+            }, ms);
+          })
+        ]);
+      }
+
+      async function loadMediapipeModule() {
+        if (!mediapipeModulePromise) {
+          mediapipeModulePromise = import(MEDIAPIPE_BUNDLE_URL);
+        }
+        return mediapipeModulePromise;
+      }
+
       async function ensureFaceLandmarker() {
-        if (state.faceLandmarker) return state.faceLandmarker;
+        if (state.faceLandmarker) {
+          return state.faceLandmarker;
+        }
 
-        var module = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest');
-        var vision = module.default || module;
-        var FilesetResolver = vision.FilesetResolver;
-        var FaceLandmarker = vision.FaceLandmarker;
+        cameraHelpText.textContent = 'Cargando detector facial...';
+        var visionModule = await withTimeout(loadMediapipeModule(), 15000, 'Tiempo agotado al cargar MediaPipe');
+        var FilesetResolver = visionModule.FilesetResolver;
+        var FaceLandmarker = visionModule.FaceLandmarker;
+        if (!FilesetResolver || !FaceLandmarker) {
+          throw new Error('MediaPipe no expuso FaceLandmarker');
+        }
 
-        var visionFileset = await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm');
-        state.faceLandmarker = await FaceLandmarker.createFromOptions(visionFileset, {
+        var vision = await withTimeout(FilesetResolver.forVisionTasks(MEDIAPIPE_WASM_URL), 15000, 'Tiempo agotado al cargar WASM');
+        state.faceLandmarker = await withTimeout(FaceLandmarker.createFromOptions(vision, {
           baseOptions: {
-            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task'
+            modelAssetPath: FACE_LANDMARKER_MODEL_URL
           },
           runningMode: 'VIDEO',
           numFaces: 1,
           minFaceDetectionConfidence: 0.6,
           minFacePresenceConfidence: 0.6,
           minTrackingConfidence: 0.6
-        });
+        }), 20000, 'Tiempo agotado al crear detector');
 
         return state.faceLandmarker;
       }
 
-      async function autoStartCamera() {
+      async function openCameraPreview() {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          showToast('Cámara no disponible', 2200);
-          retryCameraButton.classList.remove('hidden');
-          return;
+          throw new Error('Este navegador no permite cámara');
         }
 
+        if (state.mediaStream) {
+          state.mediaStream.getTracks().forEach(function (track) { track.stop(); });
+          state.mediaStream = null;
+        }
+
+        state.mediaStream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: { ideal: 'user' },
+            width: { ideal: 640 },
+            height: { ideal: 480 }
+          }
+        });
+
+        cameraVideo.srcObject = state.mediaStream;
+        await cameraVideo.play();
+      }
+
+      async function startCalibrationFlow(forceCameraReopen) {
         cameraModal.classList.remove('hidden');
         retryCameraButton.classList.add('hidden');
-        cameraHelpText.textContent = 'Solicitando cámara...';
+        state.processing = false;
+        state.detectorReady = false;
+        state.baselineEyeOpenRatio = null;
+        state.smoothedEyeOpenRatio = null;
+        state.calibrationSamples = [];
+        state.calibrationStableFrames = 0;
+        state.calibrationLastAcceptedRatio = null;
+        state.calibrationStartedAt = 0;
+        state.lastVideoTime = -1;
 
         try {
-          state.calibrationSamples = [];
-          state.calibrationStableFrames = 0;
-          state.calibrationLastAcceptedRatio = null;
-          state.calibrationStartedAt = 0;
-          state.baselineEyeOpenRatio = null;
-          state.smoothedEyeOpenRatio = null;
-          state.processing = false;
-          state.lastVideoTime = -1;
-
-          if (state.mediaStream) {
-            state.mediaStream.getTracks().forEach(function (track) { track.stop(); });
-            state.mediaStream = null;
+          if (!state.mediaStream || forceCameraReopen) {
+            cameraHelpText.textContent = 'Abriendo cámara...';
+            await openCameraPreview();
           }
 
-          state.mediaStream = await navigator.mediaDevices.getUserMedia({
-            audio: false,
-            video: {
-              facingMode: { ideal: 'user' },
-              width: { ideal: 640 },
-              height: { ideal: 480 }
-            }
-          });
-
-          cameraVideo.srcObject = state.mediaStream;
-          await cameraVideo.play();
-          cameraHelpText.textContent = 'Cámara abierta. Cargando calibración...';
+          cameraHelpText.textContent = 'Cámara abierta. Preparando detector...';
           await ensureFaceLandmarker();
           cameraHelpText.textContent = 'Mantén los ojos abiertos y el rostro centrado.';
           state.processing = true;
@@ -1188,9 +1223,16 @@ button { font: inherit; }
         } catch (error) {
           console.error(error);
           state.processing = false;
-          cameraHelpText.textContent = 'No se pudo iniciar la cámara. Reintenta.';
+          state.detectorReady = false;
           retryCameraButton.classList.remove('hidden');
-          showToast('No se pudo iniciar la cámara', 2200);
+
+          if (state.mediaStream) {
+            cameraHelpText.textContent = 'La cámara abrió, pero falló el detector facial. Reintenta.';
+            showToast('Falló el detector facial', 2200);
+          } else {
+            cameraHelpText.textContent = 'No se pudo abrir la cámara. Reintenta.';
+            showToast('No se pudo abrir la cámara', 2200);
+          }
         }
       }
 
@@ -1208,30 +1250,39 @@ button { font: inherit; }
         }
 
         state.lastVideoTime = cameraVideo.currentTime;
-        var result = state.faceLandmarker.detectForVideo(cameraVideo, now);
-        var landmarks = result.faceLandmarks && result.faceLandmarks[0] ? result.faceLandmarks[0] : null;
 
-        if (!landmarks) {
-          handleNoFace(now);
-          window.requestAnimationFrame(processVideoFrame);
-          return;
-        }
+        try {
+          var result = state.faceLandmarker.detectForVideo(cameraVideo, now);
+          var landmarks = result.faceLandmarks && result.faceLandmarks[0] ? result.faceLandmarks[0] : null;
 
-        state.lastFaceSeenAt = now;
-        var quality = faceQuality(landmarks);
-        var eyeRatio = averageEyeRatio(landmarks);
-
-        if (state.baselineEyeOpenRatio === null) {
-          collectCalibrationSample(eyeRatio, quality, now);
-          if (state.calibrationSamples.length >= state.CALIBRATION_SAMPLES_REQUIRED) {
-            finishCalibration(now);
+          if (!landmarks) {
+            handleNoFace(now);
+            window.requestAnimationFrame(processVideoFrame);
+            return;
           }
-          window.requestAnimationFrame(processVideoFrame);
-          return;
-        }
 
-        updateBlink(eyeRatio, now);
-        window.requestAnimationFrame(processVideoFrame);
+          state.lastFaceSeenAt = now;
+          var quality = faceQuality(landmarks);
+          var eyeRatio = averageEyeRatio(landmarks);
+
+          if (state.baselineEyeOpenRatio === null) {
+            collectCalibrationSample(eyeRatio, quality, now);
+            if (state.calibrationSamples.length >= state.CALIBRATION_SAMPLES_REQUIRED) {
+              finishCalibration(now);
+            }
+            window.requestAnimationFrame(processVideoFrame);
+            return;
+          }
+
+          updateBlink(eyeRatio, now);
+          window.requestAnimationFrame(processVideoFrame);
+        } catch (error) {
+          console.error(error);
+          state.processing = false;
+          cameraHelpText.textContent = 'El detector falló durante la calibración. Reintenta.';
+          retryCameraButton.classList.remove('hidden');
+          showToast('Error en detector facial', 2200);
+        }
       }
 
       function showMainScreen() {
@@ -1239,11 +1290,11 @@ button { font: inherit; }
         mainScreen.classList.remove('hidden');
         renderMenu('main');
         requestWakeLock();
-        autoStartCamera();
+        startCalibrationFlow(true);
       }
 
       retryCameraButton.addEventListener('click', function () {
-        autoStartCamera();
+        startCalibrationFlow(false);
       });
 
       confirmDecisionButton.addEventListener('click', function () {
