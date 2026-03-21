@@ -2,7 +2,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hablemos Experimental Estable</title>
+  <title>Hablemos</title>
   <style>
     :root {
       --bg: #06111f;
@@ -12,6 +12,7 @@
       --shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
       --scan: rgba(53, 255, 195, 0.95);
       --candidate: rgba(255, 216, 58, 0.98);
+      --panel: linear-gradient(180deg, rgba(16, 30, 46, 0.96) 0%, rgba(10, 20, 32, 0.98) 100%);
     }* { box-sizing: border-box; }
 
 html, body {
@@ -164,22 +165,98 @@ button { font: inherit; }
   display: flex;
   justify-content: center;
   align-items: stretch;
-  padding: 18px;
+  padding: 12px;
   background: linear-gradient(180deg, #07111d 0%, #0b1828 100%);
 }
 
 .layout {
   width: 100%;
   max-width: 1100px;
-  min-height: calc(100vh - 36px);
+  min-height: calc(100vh - 24px);
   display: grid;
-  grid-template-rows: auto auto auto 1fr auto;
+  grid-template-rows: auto auto auto auto 1fr;
   gap: 8px;
 }
 
 .menuTitle,
 .confirmZone,
 .message,
+.decisionPanel,
+.controlsPanel,
+.arrowButton {
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--panel);
+}
+
+.menuTitle {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px 12px;
+  color: var(--text);
+  font-size: clamp(1rem, 2.8vw, 1.4rem);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.confirmZone {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px 10px;
+  color: var(--text-soft);
+  font-size: clamp(0.82rem, 2.1vw, 0.96rem);
+  line-height: 1.15;
+}
+
+.confirmZone__text {
+  width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 82px;
+  padding: 10px 14px;
+}
+
+.message__text {
+  margin: 0;
+  width: 100%;
+  font-size: clamp(1.2rem, 4.8vw, 2rem);
+  line-height: 1.06;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.message--candidate {
+  border-color: rgba(255, 216, 58, 0.42);
+  box-shadow: 0 0 0 3px rgba(255, 216, 58, 0.12), var(--shadow);
+}
+
+.message--confirm {
+  border-color: rgba(255, 255, 255, 0.36);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1), var(--shadow);
+}
+
 .decisionPanel {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -188,23 +265,18 @@ button { font: inherit; }
 }
 
 .decisionButton {
-  min-height: 74px;
+  min-height: 72px;
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: var(--text);
-  font-size: clamp(1.1rem, 3.4vw, 1.45rem);
+  font-size: clamp(1.05rem, 3.4vw, 1.35rem);
   font-weight: 700;
   box-shadow: var(--shadow);
   background: linear-gradient(180deg, rgba(30, 46, 62, 0.98) 0%, rgba(14, 24, 35, 1) 100%);
 }
 
-.decisionButton--confirm {
-  background: linear-gradient(180deg, #245a3d 0%, #163825 100%);
-}
-
-.decisionButton--delete {
-  background: linear-gradient(180deg, #7a2525 0%, #491515 100%);
-}
+.decisionButton--confirm { background: linear-gradient(180deg, #245a3d 0%, #163825 100%); }
+.decisionButton--delete { background: linear-gradient(180deg, #7a2525 0%, #491515 100%); }
 
 .decisionButton--active {
   border-color: var(--scan);
@@ -212,17 +284,42 @@ button { font: inherit; }
   transform: scale(1.01);
 }
 
-.gridWrap {
-  position: relative;
-  min-height: 280px;
+.controlsPanel {
+  padding: 8px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 8px;
+}
+
+.arrowWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.arrowButton {
+  width: min(100%, 240px);
+  min-height: 78px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text);
+  font-size: clamp(1.7rem, 7vw, 2.5rem);
+  font-weight: 700;
+  background: linear-gradient(180deg, rgba(30, 46, 62, 0.98) 0%, rgba(14, 24, 35, 1) 100%);
+}
+
+.arrowButton--active {
+  border-color: var(--scan);
+  box-shadow: 0 0 0 3px rgba(53, 255, 195, 0.22), var(--shadow);
+  transform: scale(1.01);
 }
 
 .gridScroller {
-  max-height: min(64vh, 620px);
+  max-height: min(58vh, 680px);
   overflow-y: auto;
-  padding-right: 72px;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+  padding: 0 2px;
 }
 
 .gridScroller::-webkit-scrollbar { width: 8px; }
@@ -234,46 +331,21 @@ button { font: inherit; }
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  align-content: start;
+  gap: 12px;
   width: 100%;
   max-width: 760px;
   margin: 0 auto;
-}
-
-.scrollButton {
-  position: absolute;
-  right: 8px;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: linear-gradient(180deg, rgba(30, 46, 62, 0.98) 0%, rgba(14, 24, 35, 1) 100%);
-  color: var(--text);
-  font-size: 1.6rem;
-  font-weight: 700;
-  box-shadow: var(--shadow);
-  z-index: 5;
-  opacity: 0.98;
-}
-
-.scrollButton--up { top: 8px; }
-.scrollButton--down { bottom: 8px; }
-
-.scrollButton--active {
-  border-color: var(--scan);
-  box-shadow: 0 0 0 3px rgba(53, 255, 195, 0.22), var(--shadow);
-  transform: scale(1.03);
+  align-content: start;
 }
 
 .action {
-  min-height: 98px;
+  min-height: 92px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
+  border-radius: 22px;
   color: var(--text);
-  font-size: clamp(1.55rem, 4.4vw, 2.25rem);
+  font-size: clamp(1.25rem, 4.2vw, 1.95rem);
   font-weight: 700;
-  padding: 20px 16px;
+  padding: 16px 12px;
   box-shadow: var(--shadow);
   transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
 }
@@ -305,16 +377,16 @@ button { font: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  background: rgba(2, 8, 20, 0.84);
+  padding: 16px;
+  background: rgba(2, 8, 20, 0.88);
   backdrop-filter: blur(6px);
 }
 
 .cameraCard {
-  width: min(100%, 420px);
+  width: min(100%, 460px);
   display: grid;
   gap: 12px;
-  background: rgba(8, 18, 30, 0.96);
+  background: rgba(8, 18, 30, 0.98);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
   padding: 16px;
@@ -326,7 +398,7 @@ button { font: inherit; }
   text-align: center;
   color: var(--text-soft);
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .cameraWrap {
@@ -352,15 +424,22 @@ button { font: inherit; }
   text-align: center;
   color: var(--text-soft);
   font-size: 0.95rem;
-  line-height: 1.35;
+  line-height: 1.3;
+  min-height: 2.6em;
 }
 
-.footer {
-  text-align: center;
-  color: rgba(255, 255, 255, 0.64);
-  font-size: 0.95rem;
-  padding-bottom: 4px;
+.retryButton {
+  min-height: 62px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 700;
+  background: linear-gradient(180deg, #3f4a57 0%, #29313b 100%);
+  box-shadow: var(--shadow);
 }
+
+.footer { display: none; }
 
 @keyframes draw { to { stroke-dashoffset: 0; } }
 @keyframes show { to { opacity: 1; } }
@@ -372,35 +451,23 @@ button { font: inherit; }
 }
 
 @media (max-width: 640px) {
-  .main { padding: 12px; }
-  .layout { min-height: calc(100vh - 24px); gap: 8px; }
-  .message { min-height: 92px; }
-  .grid { gap: 10px; }
-  .action { min-height: 88px; border-radius: 18px; }
-  .confirmZone {
-  min-height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 8px 10px;
-  color: var(--text-soft);
-  font-size: clamp(0.8rem, 2.2vw, 0.96rem);
-  line-height: 1.15;
-  width: 100%;
-}
+  .main { padding: 10px; }
+  .layout { min-height: calc(100vh - 20px); gap: 7px; }
+  .menuTitle { min-height: 40px; font-size: 1rem; }
+  .confirmZone { min-height: 48px; }
+  .message { min-height: 74px; }
+  .message__text { font-size: clamp(1.05rem, 4.2vw, 1.6rem); }
+  .controlsPanel { gap: 6px; padding: 6px; }
+  .arrowButton { min-height: 72px; }
+  .action { min-height: 84px; font-size: 1.2rem; }
+  .decisionPanel { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 420px) {
-  .splash { padding: 16px; }
-  .stroke { stroke-width: 10; }
-  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-  .action { min-height: 84px; font-size: 1.3rem; }
-  .cameraCard { padding: 14px; }
-  .gridScroller { padding-right: 62px; }
-}
-  .cameraCard { padding: 14px; }
-  .gridScroller { padding-right: 62px; }
+  .grid { gap: 8px; }
+  .action { min-height: 80px; font-size: 1.15rem; }
+  .confirmZone { font-size: 0.8rem; }
+  .arrowButton { width: 100%; }
 }
 
   </style>
@@ -440,10 +507,10 @@ button { font: inherit; }
   <div class="layout">
     <div id="menuTitle" class="menuTitle">Comunicación</div>
 
-    <div id="confirmZone" class="confirmZone">Parpadeo largo activa. Si hay palabra escrita, el barrido pasa a Confirmar o Borrar.</div>
+    <div id="confirmZone" class="confirmZone"><span class="confirmZone__text">Parpadeo largo activa. Si hay palabra escrita, el barrido pasa a Confirmar o Borrar.</span></div>
 
     <section id="messagePanel" class="message" aria-live="polite" aria-atomic="true">
-      <h1 id="messageText" class="message__text">Iniciando cámara y calibración</h1>
+      <h1 id="messageText" class="message__text">Iniciando cámara</h1>
     </section>
 
     <section id="decisionPanel" class="decisionPanel hidden" aria-label="Confirmar o borrar selección">
@@ -451,26 +518,30 @@ button { font: inherit; }
       <button id="deleteDecisionButton" type="button" class="decisionButton decisionButton--delete">Borrar</button>
     </section>
 
-    <section class="gridWrap" aria-label="Opciones de comunicación">
-      <button id="scrollUpButton" type="button" class="scrollButton scrollButton--up" aria-label="Subir">↑</button>
-      <button id="scrollDownButton" type="button" class="scrollButton scrollButton--down" aria-label="Bajar">↓</button>
+    <section class="controlsPanel" aria-label="Opciones de comunicación">
+      <div class="arrowWrap">
+        <button id="scrollUpButton" type="button" class="arrowButton" aria-label="Subir">↑</button>
+      </div>
 
       <div id="gridScroller" class="gridScroller">
         <div id="actionsGrid" class="grid"></div>
       </div>
-    </section>
 
-    <div class="footer hidden"></div>
+      <div class="arrowWrap">
+        <button id="scrollDownButton" type="button" class="arrowButton" aria-label="Bajar">↓</button>
+      </div>
+    </section>
   </div>
 </main>
 
 <div id="cameraModal" class="cameraModal hidden" aria-label="Calibración de cámara">
   <div class="cameraCard">
-    <p class="cameraCard__title">Mantén los ojos abiertos y el rostro centrado</p>
+    <p class="cameraCard__title">Calibración de cámara</p>
     <div class="cameraWrap">
       <video id="cameraVideo" class="cameraVideo" autoplay muted playsinline></video>
     </div>
-    <p id="cameraHelpText" class="cameraCard__help">La cámara se cerrará sola cuando termine la calibración.</p>
+    <p id="cameraHelpText" class="cameraCard__help">Abriendo cámara...</p>
+    <button id="retryCameraButton" type="button" class="retryButton hidden">Reintentar cámara</button>
   </div>
 </div>
 
@@ -480,6 +551,7 @@ button { font: inherit; }
       var mainScreen = document.getElementById('mainScreen');
       var menuTitle = document.getElementById('menuTitle');
       var confirmZone = document.getElementById('confirmZone');
+      var confirmZoneText = confirmZone.querySelector('.confirmZone__text');
       var messagePanel = document.getElementById('messagePanel');
       var messageText = document.getElementById('messageText');
       var decisionPanel = document.getElementById('decisionPanel');
@@ -492,6 +564,7 @@ button { font: inherit; }
       var cameraModal = document.getElementById('cameraModal');
       var cameraHelpText = document.getElementById('cameraHelpText');
       var cameraVideo = document.getElementById('cameraVideo');
+      var retryCameraButton = document.getElementById('retryCameraButton');
       var toastLayer = document.getElementById('toastLayer');
       var toastBox = document.getElementById('toastBox');
 
@@ -584,12 +657,12 @@ button { font: inherit; }
         LONG_BLINK_MS: 720,
         BLINK_THRESHOLD_FACTOR: 0.58,
         MIN_CLOSED_EYE_RATIO: 0.10,
-        CALIBRATION_SAMPLES_REQUIRED: 72,
-        CALIBRATION_STABLE_FRAMES_REQUIRED: 20,
-        CALIBRATION_MAX_STEP_RATIO: 0.12,
-        CALIBRATION_MIN_DURATION_MS: 5000,
-        CALIBRATION_MAX_SPREAD_RATIO: 0.18,
-        LOST_FACE_RESET_MS: 1200,
+        CALIBRATION_SAMPLES_REQUIRED: 80,
+        CALIBRATION_STABLE_FRAMES_REQUIRED: 24,
+        CALIBRATION_MIN_DURATION_MS: 7000,
+        CALIBRATION_MAX_STEP_RATIO: 0.10,
+        CALIBRATION_MAX_SPREAD_RATIO: 0.15,
+        LOST_FACE_RESET_MS: 1400,
         RIGHT_EYE_OUTER: 33,
         RIGHT_EYE_INNER: 133,
         LEFT_EYE_OUTER: 263,
@@ -629,9 +702,7 @@ button { font: inherit; }
       };
 
       function showToast(message, durationMs) {
-        if (!message) {
-          return;
-        }
+        if (!message) return;
         toastBox.textContent = message;
         toastLayer.classList.remove('hidden');
         if (toastTimer) {
@@ -661,9 +732,7 @@ button { font: inherit; }
       }
 
       function chooseSpanishVoice() {
-        if (!state.hasSpeechSupport) {
-          return null;
-        }
+        if (!state.hasSpeechSupport) return null;
         var voices = window.speechSynthesis.getVoices();
         for (var i = 0; i < voices.length; i += 1) {
           if (voices[i].lang && voices[i].lang.toLowerCase().indexOf('es') === 0) {
@@ -674,26 +743,20 @@ button { font: inherit; }
       }
 
       function speakMessage(text) {
-        if (!state.hasSpeechSupport) {
-          return;
-        }
+        if (!state.hasSpeechSupport) return;
         window.speechSynthesis.cancel();
         var utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'es-ES';
         utterance.rate = 0.9;
         utterance.pitch = 1;
         var voice = chooseSpanishVoice();
-        if (voice) {
-          utterance.voice = voice;
-        }
+        if (voice) utterance.voice = voice;
         window.speechSynthesis.speak(utterance);
       }
 
       async function requestWakeLock() {
         try {
-          if (!('wakeLock' in navigator)) {
-            return;
-          }
+          if (!('wakeLock' in navigator)) return;
           wakeLockSentinel = await navigator.wakeLock.request('screen');
           wakeLockSentinel.addEventListener('release', function () {
             wakeLockSentinel = null;
@@ -709,10 +772,28 @@ button { font: inherit; }
         }
       });
 
-      function updateScrollButtons() {
-        var maxScroll = gridScroller.scrollHeight - gridScroller.clientHeight;
-        scrollUpButton.disabled = gridScroller.scrollTop <= 4;
-        scrollDownButton.disabled = gridScroller.scrollTop >= maxScroll - 4;
+      function updateArrowButtons() {
+        var current = getCurrentScanTarget();
+        scrollUpButton.classList.toggle('arrowButton--active', !state.waitingDecision && current === 'up');
+        scrollDownButton.classList.toggle('arrowButton--active', !state.waitingDecision && current === 'down');
+      }
+
+      function updateDecisionButtons() {
+        var current = getCurrentScanTarget();
+        confirmDecisionButton.classList.toggle('decisionButton--active', state.waitingDecision && current === 'confirm');
+        deleteDecisionButton.classList.toggle('decisionButton--active', state.waitingDecision && current === 'delete');
+      }
+
+      function paintScanTarget() {
+        var current = getCurrentScanTarget();
+        updateArrowButtons();
+        updateDecisionButtons();
+        state.actionButtons.forEach(function (button, index) {
+          var isCurrent = !state.waitingDecision && current === 'button:' + index;
+          var isPending = state.waitingDecision && state.pendingAction && state.pendingAction.label === button.getAttribute('data-label');
+          button.classList.toggle('action--scan', isCurrent);
+          button.classList.toggle('action--candidate', isPending);
+        });
       }
 
       function buildScanSequence() {
@@ -725,7 +806,6 @@ button { font: inherit; }
           });
         }
         state.scanPosition = 0;
-        scheduleNextScan();
       }
 
       function getCurrentScanTarget() {
@@ -745,37 +825,17 @@ button { font: inherit; }
           window.clearTimeout(state.scanTimer);
         }
         state.scanTimer = window.setTimeout(function () {
-          nextScanPosition();
+          state.scanPosition = (state.scanPosition + 1) % state.scanSequence.length;
+          paintScanTarget();
           scheduleNextScan();
         }, overrideDelay || getCurrentScanDelay());
       }
 
-      function paintScanTarget() {
-        var current = getCurrentScanTarget();
-        scrollUpButton.classList.toggle('scrollButton--active', !state.waitingDecision && current === 'up');
-        scrollDownButton.classList.toggle('scrollButton--active', !state.waitingDecision && current === 'down');
-
-        state.actionButtons.forEach(function (button, index) {
-          var isCurrent = !state.waitingDecision && current === 'button:' + index;
-          var isPending = state.waitingDecision && state.pendingAction && state.pendingAction.label === button.getAttribute('data-label');
-          button.classList.toggle('action--scan', isCurrent);
-          button.classList.toggle('action--candidate', isPending);
-        });
-
-        confirmDecisionButton.classList.toggle('decisionButton--active', state.waitingDecision && current === 'confirm');
-        deleteDecisionButton.classList.toggle('decisionButton--active', state.waitingDecision && current === 'delete');
-      }
-
-      function nextScanPosition() {
-        state.scanPosition = (state.scanPosition + 1) % state.scanSequence.length;
-        paintScanTarget();
-      }
-
       function showDecisionPanel(show) {
         decisionPanel.classList.toggle('hidden', !show);
-        confirmZone.textContent = show
+        confirmZoneText.textContent = show
           ? 'La palabra quedó escrita. El barrido recorre Confirmar y Borrar.'
-          : 'Parpadeo largo activa el elemento marcado. Si una palabra queda escrita, el barrido pasa a Confirmar y Borrar.';
+          : 'Parpadeo largo activa. Si hay palabra escrita, el barrido pasa a Confirmar o Borrar.';
       }
 
       function renderMenu(menuName) {
@@ -803,7 +863,7 @@ button { font: inherit; }
         showDecisionPanel(false);
         buildScanSequence();
         paintScanTarget();
-        updateScrollButtons();
+        scheduleNextScan();
 
         if (menuName === 'main') {
           setMessageNeutral('Espera el barrido');
@@ -815,15 +875,14 @@ button { font: inherit; }
 
       function preparePendingAction(index) {
         var item = state.currentItems[index];
-        if (!item) {
-          return;
-        }
+        if (!item) return;
         state.pendingAction = item;
         state.waitingDecision = true;
         showDecisionPanel(true);
         setCandidateMessage(item.kind === 'speak' ? item.phrase : item.label);
         buildScanSequence();
         paintScanTarget();
+        scheduleNextScan();
         showToast('Ahora elige Confirmar o Borrar', 1800);
       }
 
@@ -833,21 +892,20 @@ button { font: inherit; }
         showDecisionPanel(false);
         buildScanSequence();
         paintScanTarget();
-        setMessageNeutral(state.currentMenu === 'pain' ? 'Selecciona tipo de dolor' : 'Espera el barrido');
+        scheduleNextScan();
+        setMessageNeutral(state.currentMenu === 'main' ? 'Espera el barrido' : 'Selecciona una opción');
         showToast('Selección borrada', 1500);
       }
 
       function executePendingAction() {
-        if (!state.pendingAction) {
-          return;
-        }
-
+        if (!state.pendingAction) return;
         var action = state.pendingAction;
         state.pendingAction = null;
         state.waitingDecision = false;
         showDecisionPanel(false);
         buildScanSequence();
         paintScanTarget();
+        scheduleNextScan();
 
         if (action.kind === 'submenu') {
           renderMenu(action.submenu);
@@ -856,13 +914,13 @@ button { font: inherit; }
 
         if (action.kind === 'back') {
           renderMenu(action.backTo || 'main');
-          showToast('Volviendo', 1400);
+          showToast('Volviendo', 1300);
           return;
         }
 
         setConfirmedMessage(action.phrase);
         speakMessage(action.phrase);
-        showToast('Palabra confirmada', 1600);
+        showToast('Palabra confirmada', 1500);
       }
 
       function activateCurrentTarget() {
@@ -870,14 +928,14 @@ button { font: inherit; }
 
         if (!state.waitingDecision && current === 'up') {
           gridScroller.scrollBy({ top: -220, left: 0, behavior: 'smooth' });
-          showToast('Subiendo', 1000);
+          showToast('Subiendo', 900);
           scheduleNextScan(state.POST_ARROW_HOLD_MS);
           return;
         }
 
         if (!state.waitingDecision && current === 'down') {
           gridScroller.scrollBy({ top: 220, left: 0, behavior: 'smooth' });
-          showToast('Bajando', 1000);
+          showToast('Bajando', 900);
           scheduleNextScan(state.POST_ARROW_HOLD_MS);
           return;
         }
@@ -926,57 +984,19 @@ button { font: inherit; }
         var centerX = (left.x + right.x) / 2;
         var centerY = (top.y + bottom.y) / 2;
 
-        if (faceWidth < 0.16 || faceHeight < 0.18) {
+        if (faceWidth < 0.17 || faceHeight < 0.19) {
           return { ok: false, message: 'Acércate un poco' };
         }
-        if (faceWidth > 0.70 || faceHeight > 0.78) {
+        if (faceWidth > 0.68 || faceHeight > 0.78) {
           return { ok: false, message: 'Aléjate un poco' };
         }
-        if (centerX < 0.30 || centerX > 0.70 || centerY < 0.24 || centerY > 0.76) {
+        if (centerX < 0.32 || centerX > 0.68 || centerY < 0.25 || centerY > 0.75) {
           return { ok: false, message: 'Centra el rostro' };
         }
         return { ok: true, message: 'Rostro correcto' };
       }
 
-      function finishCalibration(now) {
-        if (state.calibrationSamples.length < state.CALIBRATION_SAMPLES_REQUIRED) {
-          return false;
-        }
-
-        if (!state.calibrationStartedAt || (now - state.calibrationStartedAt) < state.CALIBRATION_MIN_DURATION_MS) {
-          cameraHelpText.textContent = 'Mantén la posición. Terminando calibración...';
-          return false;
-        }
-
-        var sorted = state.calibrationSamples.slice().sort(function (a, b) { return a - b; });
-        var trimCount = Math.floor(sorted.length * 0.15);
-        var usable = sorted.slice(trimCount, sorted.length - trimCount);
-        if (!usable.length) {
-          usable = sorted;
-        }
-
-        var total = usable.reduce(function (sum, value) { return sum + value; }, 0);
-        var baseline = total / usable.length;
-        var spread = (usable[usable.length - 1] - usable[0]) / Math.max(baseline, 0.0001);
-
-        if (spread > state.CALIBRATION_MAX_SPREAD_RATIO) {
-          resetCalibrationCapture('Mucha variación. Recalibrando...', true);
-          return false;
-        }
-
-        state.baselineEyeOpenRatio = baseline;
-        state.calibrationSamples = [];
-        state.calibrationStableFrames = 0;
-        state.calibrationLastAcceptedRatio = null;
-        state.calibrationStartedAt = 0;
-        state.smoothedEyeOpenRatio = state.baselineEyeOpenRatio;
-        cameraModal.classList.add('hidden');
-        showToast('Calibración completa', 1700);
-        setMessageNeutral('Espera el barrido');
-        return true;
-      }
-
-      function resetCalibrationCapture(helpText, hardReset) {
+      function resetCalibration(helpText, hardReset) {
         state.calibrationStableFrames = 0;
         state.calibrationLastAcceptedRatio = null;
         if (hardReset) {
@@ -988,12 +1008,12 @@ button { font: inherit; }
 
       function collectCalibrationSample(eyeRatio, quality, now) {
         if (!quality.ok) {
-          resetCalibrationCapture(quality.message, false);
+          resetCalibration(quality.message, true);
           return;
         }
 
         if (eyeRatio <= state.MIN_CLOSED_EYE_RATIO) {
-          resetCalibrationCapture('Mantén los ojos abiertos', false);
+          resetCalibration('Mantén los ojos abiertos', false);
           return;
         }
 
@@ -1002,9 +1022,9 @@ button { font: inherit; }
         }
 
         if (state.calibrationLastAcceptedRatio !== null) {
-          var maxAllowedDelta = Math.max(state.calibrationLastAcceptedRatio * state.CALIBRATION_MAX_STEP_RATIO, 0.008);
+          var maxAllowedDelta = Math.max(state.calibrationLastAcceptedRatio * state.CALIBRATION_MAX_STEP_RATIO, 0.006);
           if (Math.abs(eyeRatio - state.calibrationLastAcceptedRatio) > maxAllowedDelta) {
-            resetCalibrationCapture('No te muevas. Reajustando calibración', true);
+            resetCalibration('No te muevas. Reiniciando calibración', true);
             return;
           }
         }
@@ -1020,15 +1040,49 @@ button { font: inherit; }
         cameraHelpText.textContent = 'Calibrando ' + state.calibrationSamples.length + ' de ' + state.CALIBRATION_SAMPLES_REQUIRED;
       }
 
-      function updateBlink(eyeRatio, now) {
-        if (state.baselineEyeOpenRatio === null) {
-          return;
+      function finishCalibration(now) {
+        if (state.calibrationSamples.length < state.CALIBRATION_SAMPLES_REQUIRED) {
+          return false;
         }
+        if (!state.calibrationStartedAt || (now - state.calibrationStartedAt) < state.CALIBRATION_MIN_DURATION_MS) {
+          cameraHelpText.textContent = 'Mantén la posición. Terminando calibración...';
+          return false;
+        }
+
+        var sorted = state.calibrationSamples.slice().sort(function (a, b) { return a - b; });
+        var trimCount = Math.floor(sorted.length * 0.15);
+        var usable = sorted.slice(trimCount, sorted.length - trimCount);
+        if (!usable.length) usable = sorted;
+
+        var total = usable.reduce(function (sum, value) { return sum + value; }, 0);
+        var baseline = total / usable.length;
+        var spread = (usable[usable.length - 1] - usable[0]) / Math.max(baseline, 0.0001);
+
+        if (spread > state.CALIBRATION_MAX_SPREAD_RATIO) {
+          resetCalibration('Mucha variación. Recalibrando...', true);
+          return false;
+        }
+
+        state.baselineEyeOpenRatio = baseline;
+        state.calibrationSamples = [];
+        state.calibrationStableFrames = 0;
+        state.calibrationLastAcceptedRatio = null;
+        state.calibrationStartedAt = 0;
+        state.smoothedEyeOpenRatio = baseline;
+        cameraModal.classList.add('hidden');
+        retryCameraButton.classList.add('hidden');
+        showToast('Calibración completa', 1700);
+        setMessageNeutral('Espera el barrido');
+        return true;
+      }
+
+      function updateBlink(eyeRatio, now) {
+        if (state.baselineEyeOpenRatio === null) return;
 
         if (state.smoothedEyeOpenRatio === null) {
           state.smoothedEyeOpenRatio = eyeRatio;
         } else {
-          state.smoothedEyeOpenRatio = state.smoothedEyeOpenRatio * 0.82 + eyeRatio * 0.18;
+          state.smoothedEyeOpenRatio = state.smoothedEyeOpenRatio * 0.85 + eyeRatio * 0.15;
         }
 
         var closedThreshold = Math.max(state.MIN_CLOSED_EYE_RATIO, state.baselineEyeOpenRatio * state.BLINK_THRESHOLD_FACTOR);
@@ -1066,9 +1120,7 @@ button { font: inherit; }
       }
 
       async function ensureFaceLandmarker() {
-        if (state.faceLandmarker) {
-          return state.faceLandmarker;
-        }
+        if (state.faceLandmarker) return state.faceLandmarker;
 
         var module = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest');
         var vision = module.default || module;
@@ -1093,13 +1145,29 @@ button { font: inherit; }
       async function autoStartCamera() {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
           showToast('Cámara no disponible', 2200);
+          retryCameraButton.classList.remove('hidden');
           return;
         }
 
         cameraModal.classList.remove('hidden');
-        showToast('Solicitando cámara', 1400);
+        retryCameraButton.classList.add('hidden');
+        cameraHelpText.textContent = 'Solicitando cámara...';
 
         try {
+          state.calibrationSamples = [];
+          state.calibrationStableFrames = 0;
+          state.calibrationLastAcceptedRatio = null;
+          state.calibrationStartedAt = 0;
+          state.baselineEyeOpenRatio = null;
+          state.smoothedEyeOpenRatio = null;
+          state.processing = false;
+          state.lastVideoTime = -1;
+
+          if (state.mediaStream) {
+            state.mediaStream.getTracks().forEach(function (track) { track.stop(); });
+            state.mediaStream = null;
+          }
+
           state.mediaStream = await navigator.mediaDevices.getUserMedia({
             audio: false,
             video: {
@@ -1111,27 +1179,23 @@ button { font: inherit; }
 
           cameraVideo.srcObject = state.mediaStream;
           await cameraVideo.play();
+          cameraHelpText.textContent = 'Cámara abierta. Cargando calibración...';
           await ensureFaceLandmarker();
           cameraHelpText.textContent = 'Mantén los ojos abiertos y el rostro centrado.';
-          state.calibrationSamples = [];
-          state.calibrationStableFrames = 0;
-          state.calibrationLastAcceptedRatio = null;
-          state.calibrationStartedAt = 0;
           state.processing = true;
-          state.lastVideoTime = -1;
           state.lastFaceSeenAt = performance.now();
           processVideoFrame();
         } catch (error) {
           console.error(error);
-          cameraModal.classList.add('hidden');
+          state.processing = false;
+          cameraHelpText.textContent = 'No se pudo iniciar la cámara. Reintenta.';
+          retryCameraButton.classList.remove('hidden');
           showToast('No se pudo iniciar la cámara', 2200);
         }
       }
 
       function processVideoFrame() {
-        if (!state.processing || !state.faceLandmarker) {
-          return;
-        }
+        if (!state.processing || !state.faceLandmarker) return;
 
         var now = performance.now();
         if (cameraVideo.readyState < 2) {
@@ -1174,22 +1238,20 @@ button { font: inherit; }
         splashScreen.classList.add('hidden');
         mainScreen.classList.remove('hidden');
         renderMenu('main');
-        scheduleNextScan();
-        updateScrollButtons();
         requestWakeLock();
         autoStartCamera();
       }
 
+      retryCameraButton.addEventListener('click', function () {
+        autoStartCamera();
+      });
+
       confirmDecisionButton.addEventListener('click', function () {
-        if (state.waitingDecision) {
-          executePendingAction();
-        }
+        if (state.waitingDecision) executePendingAction();
       });
 
       deleteDecisionButton.addEventListener('click', function () {
-        if (state.waitingDecision) {
-          clearPendingSelection();
-        }
+        if (state.waitingDecision) clearPendingSelection();
       });
 
       scrollUpButton.addEventListener('click', function () {
@@ -1203,9 +1265,6 @@ button { font: inherit; }
         showToast('Bajando', 1000);
         scheduleNextScan(state.POST_ARROW_HOLD_MS);
       });
-
-      gridScroller.addEventListener('scroll', updateScrollButtons);
-      window.addEventListener('resize', updateScrollButtons);
 
       window.setTimeout(showMainScreen, state.SPLASH_DURATION_MS);
     })();
