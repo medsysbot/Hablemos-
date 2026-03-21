@@ -520,7 +520,7 @@ button { font: inherit; }
 
     <section class="controlsPanel" aria-label="Opciones de comunicación">
       <div class="arrowWrap">
-        <button id="scrollUpButton" type="button" class="arrowButton" aria-label="Subir">↑</button>
+        <button id="scrollUpButton" type="button" class="arrowButton" aria-label="Bajar">↓</button>
       </div>
 
       <div id="gridScroller" class="gridScroller">
@@ -528,7 +528,7 @@ button { font: inherit; }
       </div>
 
       <div class="arrowWrap">
-        <button id="scrollDownButton" type="button" class="arrowButton" aria-label="Bajar">↓</button>
+        <button id="scrollDownButton" type="button" class="arrowButton" aria-label="Subir">↑</button>
       </div>
     </section>
   </div>
@@ -547,8 +547,9 @@ button { font: inherit; }
 
   </div>  <script>
     (function () {
-      var MEDIAPIPE_BUNDLE_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs';
-      var MEDIAPIPE_WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm';
+      var MEDIAPIPE_VERSION = '0.10.32';
+      var MEDIAPIPE_BUNDLE_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@' + MEDIAPIPE_VERSION + '/vision_bundle.mjs';
+      var MEDIAPIPE_WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@' + MEDIAPIPE_VERSION + '/wasm';
       var FACE_LANDMARKER_MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
 
       var splashScreen = document.getElementById('splashScreen');
@@ -933,15 +934,15 @@ button { font: inherit; }
         var current = getCurrentScanTarget();
 
         if (!state.waitingDecision && current === 'up') {
-          gridScroller.scrollBy({ top: -220, left: 0, behavior: 'smooth' });
-          showToast('Subiendo', 900);
+          gridScroller.scrollBy({ top: 220, left: 0, behavior: 'smooth' });
+          showToast('Bajando', 900);
           scheduleNextScan(state.POST_ARROW_HOLD_MS);
           return;
         }
 
         if (!state.waitingDecision && current === 'down') {
-          gridScroller.scrollBy({ top: 220, left: 0, behavior: 'smooth' });
-          showToast('Bajando', 900);
+          gridScroller.scrollBy({ top: -220, left: 0, behavior: 'smooth' });
+          showToast('Subiendo', 900);
           scheduleNextScan(state.POST_ARROW_HOLD_MS);
           return;
         }
@@ -1126,22 +1127,12 @@ button { font: inherit; }
         }
       }
 
-      function withTimeout(promise, ms, label) {
-        return Promise.race([
-          promise,
-          new Promise(function (_, reject) {
-            window.setTimeout(function () {
-              reject(new Error(label));
-            }, ms);
-          })
-        ]);
-      }
-
       async function loadMediapipeModule() {
         if (!mediapipeModulePromise) {
           mediapipeModulePromise = import(MEDIAPIPE_BUNDLE_URL);
         }
-        return mediapipeModulePromise;
+        var module = await mediapipeModulePromise;
+        return module.default || module;
       }
 
       async function ensureFaceLandmarker() {
@@ -1150,15 +1141,16 @@ button { font: inherit; }
         }
 
         cameraHelpText.textContent = 'Cargando detector facial...';
-        var visionModule = await withTimeout(loadMediapipeModule(), 15000, 'Tiempo agotado al cargar MediaPipe');
-        var FilesetResolver = visionModule.FilesetResolver;
-        var FaceLandmarker = visionModule.FaceLandmarker;
+        var vision = await loadMediapipeModule();
+        var FilesetResolver = vision.FilesetResolver;
+        var FaceLandmarker = vision.FaceLandmarker;
+
         if (!FilesetResolver || !FaceLandmarker) {
-          throw new Error('MediaPipe no expuso FaceLandmarker');
+          throw new Error('El módulo MediaPipe no expuso FaceLandmarker');
         }
 
-        var vision = await withTimeout(FilesetResolver.forVisionTasks(MEDIAPIPE_WASM_URL), 15000, 'Tiempo agotado al cargar WASM');
-        state.faceLandmarker = await withTimeout(FaceLandmarker.createFromOptions(vision, {
+        var fileset = await FilesetResolver.forVisionTasks(MEDIAPIPE_WASM_URL);
+        state.faceLandmarker = await FaceLandmarker.createFromOptions(fileset, {
           baseOptions: {
             modelAssetPath: FACE_LANDMARKER_MODEL_URL
           },
@@ -1167,29 +1159,31 @@ button { font: inherit; }
           minFaceDetectionConfidence: 0.6,
           minFacePresenceConfidence: 0.6,
           minTrackingConfidence: 0.6
-        }), 20000, 'Tiempo agotado al crear detector');
+        });
 
         return state.faceLandmarker;
       }
 
-      async function openCameraPreview() {
+      async function openCameraPreview(forceReopen) {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
           throw new Error('Este navegador no permite cámara');
         }
 
-        if (state.mediaStream) {
+        if (state.mediaStream && forceReopen) {
           state.mediaStream.getTracks().forEach(function (track) { track.stop(); });
           state.mediaStream = null;
         }
 
-        state.mediaStream = await navigator.mediaDevices.getUserMedia({
-          audio: false,
-          video: {
-            facingMode: { ideal: 'user' },
-            width: { ideal: 640 },
-            height: { ideal: 480 }
-          }
-        });
+        if (!state.mediaStream) {
+          state.mediaStream = await navigator.mediaDevices.getUserMedia({
+            audio: false,
+            video: {
+              facingMode: { ideal: 'user' },
+              width: { ideal: 640 },
+              height: { ideal: 480 }
+            }
+          });
+        }
 
         cameraVideo.srcObject = state.mediaStream;
         await cameraVideo.play();
@@ -1209,11 +1203,8 @@ button { font: inherit; }
         state.lastVideoTime = -1;
 
         try {
-          if (!state.mediaStream || forceCameraReopen) {
-            cameraHelpText.textContent = 'Abriendo cámara...';
-            await openCameraPreview();
-          }
-
+          cameraHelpText.textContent = 'Abriendo cámara...';
+          await openCameraPreview(forceCameraReopen);
           cameraHelpText.textContent = 'Cámara abierta. Preparando detector...';
           await ensureFaceLandmarker();
           cameraHelpText.textContent = 'Mantén los ojos abiertos y el rostro centrado.';
@@ -1223,7 +1214,6 @@ button { font: inherit; }
         } catch (error) {
           console.error(error);
           state.processing = false;
-          state.detectorReady = false;
           retryCameraButton.classList.remove('hidden');
 
           if (state.mediaStream) {
@@ -1279,8 +1269,8 @@ button { font: inherit; }
         } catch (error) {
           console.error(error);
           state.processing = false;
-          cameraHelpText.textContent = 'El detector falló durante la calibración. Reintenta.';
           retryCameraButton.classList.remove('hidden');
+          cameraHelpText.textContent = 'El detector falló durante la calibración. Reintenta.';
           showToast('Error en detector facial', 2200);
         }
       }
@@ -1306,14 +1296,14 @@ button { font: inherit; }
       });
 
       scrollUpButton.addEventListener('click', function () {
-        gridScroller.scrollBy({ top: -220, left: 0, behavior: 'smooth' });
-        showToast('Subiendo', 1000);
+        gridScroller.scrollBy({ top: 220, left: 0, behavior: 'smooth' });
+        showToast('Bajando', 1000);
         scheduleNextScan(state.POST_ARROW_HOLD_MS);
       });
 
       scrollDownButton.addEventListener('click', function () {
-        gridScroller.scrollBy({ top: 220, left: 0, behavior: 'smooth' });
-        showToast('Bajando', 1000);
+        gridScroller.scrollBy({ top: -220, left: 0, behavior: 'smooth' });
+        showToast('Subiendo', 1000);
         scheduleNextScan(state.POST_ARROW_HOLD_MS);
       });
 
